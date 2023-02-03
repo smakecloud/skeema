@@ -30,6 +30,9 @@ class SkeemaInitCommand extends SkeemaBaseCommand
         $this->patchSkeemaConfigFile();
     }
 
+    /**
+     * Patch config file with environment variables interpolated
+     */
     private function getSkeemaConfig()
     {
         return Str::of("generator=skeema:1.9.0-community" . PHP_EOL)
@@ -42,6 +45,9 @@ class SkeemaInitCommand extends SkeemaBaseCommand
             ->append("password=\$LARAVEL_SKEEMA_DB_PASSWORD" . PHP_EOL);
     }
 
+    /**
+     * Patch config file with environment variables interpolated
+     */
     private function patchSkeemaConfigFile()
     {
         $configFilePath = $this->getSkeemaDir() . DIRECTORY_SEPARATOR . '.skeema';

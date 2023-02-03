@@ -15,6 +15,9 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         return $this->getSkeemaCommand('lint ' . static::SKEEMA_ENV_NAME, $this->lintRules());
     }
 
+    /**
+     * Get the lint rules.
+     */
     private function lintRules()
     {
         return collect($this->getConfig('skeema.lint.rules', []))

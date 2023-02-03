@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 abstract class SkeemaBaseCommand extends Command
@@ -77,6 +76,7 @@ abstract class SkeemaBaseCommand extends Command
         return $this->laravel->get('config')->get($key, $default);
     }
 
+
     /**
      * Get the connection instance.
      *
@@ -96,13 +96,6 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function ensureSkeemaDirExists()
     {
-        // $this->getConnection()->getSchemaBuilder()->create(
-        //     $this->getConfig('skeema.schema_table', 'skeema_schema'),
-        //     function ($table) {
-        //         $table->string('version');
-        //     }
-        // );
-
         if (! $this->files->exists($this->getSkeemaDir())) {
             $this->files->makeDirectory($this->getSkeemaDir(), 0755, true);
         }
@@ -116,20 +109,6 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function runProcess($command)
     {
-        // var_dump(
-        //     $command,
-        //     $this->getSkeemaDir(),
-        //     $this->getBaseArgs(),
-        //     [
-        //         'LARAVEL_SKEEMA_DB_HOST' => $this->getConnection()->getConfig('host'),
-        //         'LARAVEL_SKEEMA_DB_PORT' => $this->getConnection()->getConfig('port'),
-        //         'LARAVEL_SKEEMA_DB_USER' => $this->getConnection()->getConfig('username'),
-        //         'LARAVEL_SKEEMA_DB_PASSWORD' => $this->getConnection()->getConfig('password'),
-        //         'LARAVEL_SKEEMA_DB_SCHEMA' => $this->getConnection()->getConfig('database'),
-        //     ]
-        // );
-        //     exit;
-
         $process = call_user_func(
             $this->processFactory,
             $command,
@@ -185,14 +164,6 @@ abstract class SkeemaBaseCommand extends Command
         }
     }
 
-    // private function parseLine(string $line)
-    // {
-    //     $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\] (.*)$/m';
-    //     preg_match_all($re, $line, $matches, PREG_SET_ORDER, 0);
-
-
-    // }
-
     /**
      * Called on successfull  execution.
      */
@@ -209,10 +180,21 @@ abstract class SkeemaBaseCommand extends Command
         //$this->error($process->getErrorOutput());
     }
 
+    /**
+     * Get the alter wrapper command.
+     *
+     * @return string
+     */
     private function getAlterWrapperCommand()
     {
         return Str::of('gh-ost')
-            ->append(' --execute --alter {CLAUSES} D={SCHEMA},t={TABLE},h={HOST},P={PORT},u={USER},p={PASSWORDX}')
+            ->append(' --execute')
+            ->append(' --alter {CLAUSES}')
+            ->append(' --schema={SCHEMA}')
+            ->append(' --table={TABLE}')
+            ->append(' --host={HOST}')
+            ->append(' --user={USER}')
+            ->append(' --password={PASSWORD}')
             ->append(' ' . implode(' ', $this->getConfig('skeema.alter_wrapper.params', [])))
             ->toString();
     }
@@ -228,7 +210,7 @@ abstract class SkeemaBaseCommand extends Command
             'default-character-set' => $this->getConnection()->getConfig('charset'),
             'default-collation' => $this->getConnection()->getConfig('collation'),
             'alter-wrapper' => $this->getAlterWrapperCommand(),
-            'alter-wrapper-min-size' => $this->getConfig(('skeema.alter_wrapper.min_size'), '100m'),
+            'alter-wrapper-min-size' => $this->getConfig(('skeema.alter_wrapper.min_size'), '0'),
         ];
     }
 
