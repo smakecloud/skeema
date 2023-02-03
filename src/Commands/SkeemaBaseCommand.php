@@ -63,7 +63,7 @@ abstract class SkeemaBaseCommand extends Command
     /**
      * Get the config.
      *
-     * @return string
+     * @return mixed
      */
     protected function getConfig(string $key, $default = null)
     {
@@ -119,6 +119,7 @@ abstract class SkeemaBaseCommand extends Command
         // var_dump(
         //     $command,
         //     $this->getSkeemaDir(),
+        //     $this->getBaseArgs(),
         //     [
         //         'LARAVEL_SKEEMA_DB_HOST' => $this->getConnection()->getConfig('host'),
         //         'LARAVEL_SKEEMA_DB_PORT' => $this->getConnection()->getConfig('port'),
@@ -165,6 +166,11 @@ abstract class SkeemaBaseCommand extends Command
         $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\] (.*)$/m';
         preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
 
+        if(empty($matches)) {
+            $this->info($buffer);
+            return;
+        }
+
         foreach ($matches as $match) {
             $time = $match[1];
             $message = $match[3];
@@ -203,6 +209,14 @@ abstract class SkeemaBaseCommand extends Command
         //$this->error($process->getErrorOutput());
     }
 
+    private function getAlterWrapperCommand()
+    {
+        return Str::of('gh-ost')
+            ->append(' --execute --alter {CLAUSES} D={SCHEMA},t={TABLE},h={HOST},P={PORT},u={USER},p={PASSWORDX}')
+            ->append(' ' . implode(' ', $this->getConfig('skeema.alter_wrapper.params', [])))
+            ->toString();
+    }
+
     /**
      * Get the base arguments for the skeema command.
      *
@@ -213,6 +227,8 @@ abstract class SkeemaBaseCommand extends Command
         return [
             'default-character-set' => $this->getConnection()->getConfig('charset'),
             'default-collation' => $this->getConnection()->getConfig('collation'),
+            'alter-wrapper' => $this->getAlterWrapperCommand(),
+            'alter-wrapper-min-size' => $this->getConfig(('skeema.alter_wrapper.min_size'), '100m'),
         ];
     }
 
