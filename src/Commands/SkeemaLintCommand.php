@@ -3,7 +3,6 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
-use Illuminate\Support\Str;
 
 class SkeemaLintCommand extends SkeemaBaseCommand
 {

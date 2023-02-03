@@ -3,6 +3,7 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
+use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
 
 class SkeemaInitCommand extends SkeemaBaseCommand
@@ -25,6 +26,33 @@ class SkeemaInitCommand extends SkeemaBaseCommand
     protected function onSuccess(Process $process)
     {
         $this->info('Skeema init successful');
+
+        $this->patchSkeemaConfigFile();
+    }
+
+    private function getSkeemaConfig()
+    {
+        return Str::of("generator=skeema:1.9.0-community" . PHP_EOL)
+            ->append("[" . static::SKEEMA_ENV_NAME . "]" . PHP_EOL)
+            ->append("flavor=mysql:5.7" . PHP_EOL)
+            ->append("host=\$LARAVEL_SKEEMA_DB_HOST" . PHP_EOL)
+            ->append("port=\$LARAVEL_SKEEMA_DB_PORT" . PHP_EOL)
+            ->append("schema=\$LARAVEL_SKEEMA_DB_SCHEMA" . PHP_EOL)
+            ->append("user=\$LARAVEL_SKEEMA_DB_USER" . PHP_EOL)
+            ->append("password=\$LARAVEL_SKEEMA_DB_PASSWORD" . PHP_EOL);
+    }
+
+    private function patchSkeemaConfigFile()
+    {
+        $configFilePath = $this->getSkeemaDir() . DIRECTORY_SEPARATOR . '.skeema';
+
+        if (!$this->files->exists($configFilePath)) {
+            $this->error('Skeema config file not found');
+
+            return;
+        }
+
+        $this->files->put($configFilePath, $this->getSkeemaConfig()->toString());
     }
 
 }
