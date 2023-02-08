@@ -4,6 +4,10 @@ namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
 
+/**
+ * Class SkeemaDiffCommand
+ * Runs the skeema diff command to compare the database schema with the schema files.
+ */
 class SkeemaDiffCommand extends SkeemaBaseCommand
 {
     protected $signature = 'skeema:diff {--connection=}';

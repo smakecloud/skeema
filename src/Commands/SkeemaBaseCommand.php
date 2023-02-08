@@ -35,6 +35,9 @@ abstract class SkeemaBaseCommand extends Command
      */
     abstract protected function getCommand(Connection $connection): string;
 
+    /**
+     * Handle the command.
+     */
     public function handle()
     {
         $this->files = $this->laravel->get(Filesystem::class);

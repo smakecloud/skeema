@@ -4,6 +4,10 @@ namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
 
+/**
+ * Class SkeemaLintCommand
+ * Runs the skeema lint command to lint the schema files against the database.
+ */
 class SkeemaLintCommand extends SkeemaBaseCommand
 {
     protected $signature = 'skeema:lint {--connection=}';

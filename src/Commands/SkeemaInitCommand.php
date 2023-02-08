@@ -6,6 +6,11 @@ use Illuminate\Database\Connection;
 use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
 
+/**
+ * Class SkeemaInitCommand
+ * Runs the skeema init command to create the schema files.
+ * Patches the generated config file with environment variables interpolated.
+ */
 class SkeemaInitCommand extends SkeemaBaseCommand
 {
     protected $signature = 'skeema:init {--connection=}';
