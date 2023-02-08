@@ -209,9 +209,9 @@ composer test
 
 This package is not affiliated with Skeema in any way.
 
-Read the documentation of Skeema before using this package !
+**Read the documentation of Skeema before using this package !**
 
-We don't take any responsibility for any damage caused by this package.
+**We don't take any responsibility for any damage caused by this package.**
 
 ## License
 
