@@ -30,7 +30,23 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
         parent::setUp();
 
+        $this->removeExistingSkeemaDir();
+
         // Code after application created.
+    }
+
+    protected function getSkeemaDir(): string
+    {
+        return self::applicationBasePath() . '/' . config('skeema.dir');
+    }
+
+    private function removeExistingSkeemaDir(): void
+    {
+        $skeemaDir = $this->getSkeemaDir();
+
+        if ($this->app->files->exists($skeemaDir)) {
+            $this->app->files->deleteDirectory($skeemaDir);
+        }
     }
 
     /**

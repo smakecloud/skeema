@@ -9,6 +9,11 @@ use Illuminate\Support\Str;
 use Smakecloud\Skeema\Traits\SerializesArguments;
 use Symfony\Component\Process\Process;
 
+/**
+ * Class SkeemaBaseCommand.
+ * @TODO: Once we drop Laravel 9 support, we can refactor the process factory to use:
+ * https://laravel-news.com/process-facade-laravel-10
+ */
 abstract class SkeemaBaseCommand extends Command
 {
     use SerializesArguments;
