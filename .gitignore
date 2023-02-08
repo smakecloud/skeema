@@ -23,4 +23,3 @@ Homestead.json
 .idea
 .phpunit.result.cache
 clover.xml
-coverage/
