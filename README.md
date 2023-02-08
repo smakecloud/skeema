@@ -40,6 +40,37 @@ return [
     'connection' => env('DB_CONNECTION', 'mysql'),
 
     /**
+     * Alter Wrapper
+     */
+    'alter_wrapper' => [
+        /**
+         * Any table smaller than this size (in bytes) will ignore the alter-wrapper option. This permits skipping the overhead of external OSC tools when altering small tables.
+         */
+        'min_size' => '0',
+
+        /**
+         * https://github.com/github/gh-ost/blob/master/doc/command-line-flags.md
+         */
+        'params' => [
+            '--max-load=Threads_running=25',
+            '--critical-load=Threads_running=1000',
+            '--chunk-size=1000',
+            '--throttle-control-replicas=' . env('DB_REPLICAS'),
+            '--max-lag-millis=1500',
+            '--verbose',
+            '--assume-rbr',
+            '--allow-on-master',
+            '--cut-over=default',
+            '--exact-rowcount',
+            '--concurrent-rowcount',
+            '--default-retries=120',
+            '--timestamp-old-table',
+            // https://github.com/github/gh-ost/blob/master/doc/command-line-flags.md#postpone-cut-over-flag-file
+            '--postpone-cut-over-flag-file=/tmp/ghost.postpone.flag',
+        ],
+    ],
+
+    /**
      * Linter specific config
      * lint, diff, push, Cloud Linter
      */
