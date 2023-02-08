@@ -1,7 +1,7 @@
 # Laravel Skeema
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://packagist.org/packages/robinvdvleuten/laravel-skeema)
-[![Build Status](https://img.shields.io/travis/robinvdvleuten/laravel-skeema/master.svg?style=flat-square)](https://travis-ci.org/robinvdvleuten/laravel-skeema)
+[![phpunit](https://github.com/smakecloud/skeema/actions/workflows/phpunit.yml/badge.svg)](https://github.com/smakecloud/skeema/actions/workflows/phpunit.yml)
 [![Quality Score](https://img.shields.io/scrutinizer/g/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://scrutinizer-ci.com/g/robinvdvleuten/laravel-skeema)
 [![Total Downloads](https://img.shields.io/packagist/dt/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://packagist.org/packages/robinvdvleuten/laravel-skeema)
 
