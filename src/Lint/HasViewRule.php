@@ -12,6 +12,7 @@ namespace Smakecloud\Skeema\Lint;
  * Restrictions	Requires one of these values: “ignore”, “warning”, “error”
  *
  * Docs: https://www.skeema.io/docs/options/#lint-has-view
+ * @codeCoverageIgnore
  */
 class HasViewRule extends BaseRule
 {

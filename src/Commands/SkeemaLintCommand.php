@@ -16,6 +16,8 @@ class SkeemaLintCommand extends SkeemaBaseCommand
 
     public function getCommand(Connection $connection): string
     {
+        $this->ensureSkeemaConfigFileExists();
+
         return $this->getSkeemaCommand('lint ' . static::SKEEMA_ENV_NAME, $this->lintRules());
     }
 

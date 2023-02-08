@@ -29,7 +29,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
-        "test:coverage": "php -dpcov.enabled=1 -dpcov.directory=. -dpcov.exclude='~vendor~' vendor/bin/phpunit -d memory_limit=6144M --coverage-clover clover.xml --verbose",
+        "test:coverage": "php -dpcov.enabled=1 -dpcov.directory=. -dpcov.exclude='~vendor~' vendor/bin/phpunit -d memory_limit=6144M --coverage-html coverage --verbose",
         "lint": "vendor/bin/phpcs --standard=PSR2 --colors src/ tests/",
         "post-autoload-dump": [
             "@php vendor/bin/testbench package:discover --ansi"

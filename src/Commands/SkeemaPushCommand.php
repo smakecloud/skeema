@@ -17,6 +17,7 @@ class SkeemaPushCommand extends SkeemaBaseCommand
     public function getCommand(Connection $connection): string
     {
         $this->confirmToProceed('Running skeema push in production.');
+        $this->ensureSkeemaConfigFileExists();
 
         return $this->getSkeemaCommand('push ' . static::SKEEMA_ENV_NAME, [
 

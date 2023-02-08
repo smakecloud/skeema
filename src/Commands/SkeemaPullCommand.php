@@ -16,6 +16,8 @@ class SkeemaPullCommand extends SkeemaBaseCommand
 
     public function getCommand(Connection $connection): string
     {
+        $this->ensureSkeemaConfigFileExists();
+
         return $this->getSkeemaCommand('pull ' . static::SKEEMA_ENV_NAME, [
 
         ]);

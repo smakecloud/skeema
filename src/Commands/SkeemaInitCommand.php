@@ -59,9 +59,11 @@ class SkeemaInitCommand extends SkeemaBaseCommand
     {
         $configFilePath = $this->getSkeemaDir() . DIRECTORY_SEPARATOR . '.skeema';
 
-        if (!$this->files->exists($configFilePath)) {
-            $this->error('Skeema config file not found');
 
+        if (!$this->files->exists($configFilePath)) {
+            // @codeCoverageIgnoreStart
+            throw new \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException($configFilePath);
+            // @codeCoverageIgnoreEnd
             return;
         }
 

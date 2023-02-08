@@ -18,7 +18,18 @@ abstract class SkeemaBaseCommand extends Command
 {
     use SerializesArguments;
 
+    public const ERROR_CODES = [
+        'SKEEMA_COMMAND_CANCELLED' => 1,
+        'SKEEMA_CONFIG_NOT_FOUND' => 2,
+        'SKEEMA_UNKNOWN_PROCESS_EXCEPTION' => 3
+    ];
+
+    /**
+     * The skeema environment name.
+     * Used in config file overvwrites and command line arguments.
+     */
     public const SKEEMA_ENV_NAME = 'laravel';
+
     /**
      * The filesystem instance.
      *
@@ -66,11 +77,15 @@ abstract class SkeemaBaseCommand extends Command
         } catch (\Smakecloud\Skeema\Exceptions\CommandCancelledException $e) {
             $this->error('Command cancelled.');
 
-            $exitCode = 1;
+            $exitCode = self::ERROR_CODES['SKEEMA_COMMAND_CANCELLED'];
+        } catch (\Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException $e) {
+            $this->error($e->getMessage());
+
+            $exitCode = self::ERROR_CODES['SKEEMA_CONFIG_NOT_FOUND'];
         } catch (\Exception $e) {
             $this->error($e->getMessage());
 
-            $exitCode = 2;
+            $exitCode = self::ERROR_CODES['SKEEMA_UNKNOWN_PROCESS_EXCEPTION'];
         } finally {
             $this->info('Done.');
         }
@@ -334,5 +349,14 @@ abstract class SkeemaBaseCommand extends Command
     private function applicationIsRunningInProduction()
     {
         return $this->laravel->environment() === 'production';
+    }
+
+    protected function ensureSkeemaConfigFileExists()
+    {
+        $configFilePath = $this->getSkeemaDir() . DIRECTORY_SEPARATOR . '.skeema';
+
+        if (!$this->files->exists($configFilePath)) {
+            throw new \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException($configFilePath);
+        }
     }
 }

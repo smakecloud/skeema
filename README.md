@@ -198,6 +198,12 @@ php artisan skeema:cloud-linter
 composer test
 ```
 
+## ToDos
+
+- [ ] Add support for Skeema's `--alter-wrapper` option
+- [ ] 100% test coverage
+- [ ] Add support for ssl connections
+
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.

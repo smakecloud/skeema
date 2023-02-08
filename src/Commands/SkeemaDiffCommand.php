@@ -16,6 +16,8 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
 
     public function getCommand(Connection $connection): string
     {
+        $this->ensureSkeemaConfigFileExists();
+
         return $this->getSkeemaCommand('diff ' . static::SKEEMA_ENV_NAME, [
 
         ]);
