@@ -100,11 +100,15 @@ return [
 
 ### Dumping the schema
 
+Run this once against your production database to generate the initial schema files.
+
 ```bash
 php artisan skeema:init
 ```
 
 ### Linting the schema
+
+Lint the schema files with your configured rules.
 
 ```bash
 php artisan skeema:lint
@@ -112,11 +116,15 @@ php artisan skeema:lint
 
 ### Diffing the schema
 
+Diff the schema files against the database.
+
 ```bash
 php artisan skeema:diff
 ```
 
 ### Pushing the schema
+
+Push the schema files to the database.
 
 ```bash
 php artisan skeema:push
@@ -124,12 +132,17 @@ php artisan skeema:push
 
 ### Pulling the schema
 
+Pull the schema files from the database.
+
 ```bash
 php artisan skeema:pull
 ```
 
 
 ### Cloud Linter
+
+Lint the schema files with your configured rules in CI.
+See https://www.skeema.io/docs/cloud-linter
 
 ```bash
 php artisan skeema:cloud-linter
