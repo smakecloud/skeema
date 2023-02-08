@@ -43,8 +43,10 @@ abstract class SkeemaBaseCommand extends Command
     /**
      * Handle the command.
      */
-    public function handle()
+    public function handle(): int
     {
+        $exitCode = 0;
+
         $this->files = $this->laravel->get(Filesystem::class);
 
         $this->processFactory = function (...$arguments) {
@@ -55,7 +57,25 @@ abstract class SkeemaBaseCommand extends Command
 
         $this->ensureSkeemaDirExists();
 
-        $this->runProcess($this->getCommand($this->getConnection()));
+        try {
+            $command = $this->getCommand($this->getConnection());
+
+            $this->info('Running: ' . $command);
+
+            $this->runProcess($command);
+        } catch (\Smakecloud\Skeema\Exceptions\CommandCancelledException $e) {
+            $this->error('Command cancelled.');
+
+            $exitCode = 1;
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+
+            $exitCode = 2;
+        } finally {
+            $this->info('Done.');
+        }
+
+        return $exitCode;
     }
 
     /**
@@ -286,5 +306,33 @@ abstract class SkeemaBaseCommand extends Command
         }
 
         return $command->toString();
+    }
+
+    /**
+     * Confirm or force if we are running in production.
+     */
+    protected function confirmToProceed($warning = 'Application In Production!')
+    {
+        if ($this->option('force')) {
+            return;
+        }
+
+        if ($this->applicationIsRunningInProduction()) {
+            if ($this->confirm($warning . ' Proceed?', false)) {
+                return;
+            }
+
+            throw new \Smakecloud\Skeema\Exceptions\CommandCancelledException();
+        }
+
+        return;
+    }
+
+    /**
+     * Check if we are running in production
+     */
+    private function applicationIsRunningInProduction()
+    {
+        return $this->laravel->environment() === 'production';
     }
 }

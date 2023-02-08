@@ -13,6 +13,33 @@ class SkeemaInitCommandTest extends TestCase
             ->assertExitCode(0);
     }
 
+    /**
+     * @test
+     * @define-env runsInProduction
+     */
+    public function it_asks_for_confirmation_in_production_environments()
+    {
+
+        $this->assertTrue($this->app->isProduction());
+
+        $this->artisan('skeema:init')
+            ->expectsConfirmation('Running skeema init will overwrite any existing schema files. Proceed?', 'no')
+            ->expectsOutput('Command cancelled.')
+            ->assertExitCode(1);
+    }
+
+    /**
+     * @test
+     * @define-env runsInProduction
+     */
+    public function it_doesnt_asks_for_confirmation_in_production_environments_with_force_flag()
+    {
+        $this->assertTrue($this->app->isProduction());
+
+        $this->artisan('skeema:init --force')
+            ->assertExitCode(0);
+    }
+
     /** @test */
     public function it_generated_a_skeema_config()
     {

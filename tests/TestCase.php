@@ -58,4 +58,18 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         return __DIR__.'/laravel';
     }
+
+    /**
+     * Run test in 'prod' env
+     *
+     * @param  \Illuminate\Foundation\Application  $app
+     *
+     * @return void
+     */
+    protected function runsInProduction($app)
+    {
+        $app['env'] = 'production';
+        $app->config->set('app.env', 'production');
+    }
+
 }

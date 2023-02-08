@@ -13,12 +13,14 @@ use Symfony\Component\Process\Process;
  */
 class SkeemaInitCommand extends SkeemaBaseCommand
 {
-    protected $signature = 'skeema:init {--connection=}';
+    protected $signature = 'skeema:init {--force} {--connection=}';
 
     protected $description = 'Inits the database schema ';
 
     public function getCommand(Connection $connection): string
     {
+        $this->confirmToProceed('Running skeema init will overwrite any existing schema files.');
+
         return $this->getSkeemaCommand('init ' . static::SKEEMA_ENV_NAME, [
             'host' => $connection->getConfig('host'),
             'schema' => $connection->getConfig('database'),
