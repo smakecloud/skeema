@@ -66,11 +66,14 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function getConfig(string $key, $default = null)
     {
-        if(
-            Str::startsWith($key, 'skeema.')
-            && $this->hasOption(Str::replaceFirst('skeema.', '', $key))
-        ) {
-            return $this->option(Str::replaceFirst('skeema.', '', $key));
+        if (Str::startsWith($key, 'skeema.')) {
+            $replacedString = Str::of($key)
+                ->replaceFirst('skeema.', '')
+                ->toString();
+
+            if ($this->hasOption($replacedString)) {
+                return $this->option($replacedString);
+            }
         }
 
         return $this->laravel->get('config')->get($key, $default);
@@ -116,15 +119,15 @@ abstract class SkeemaBaseCommand extends Command
             $this->getProcessEnvironment()
         );
 
-        $process->run(function ($type, $line) {
-            $this->onOutput($type, $line);
-        });
+        $process->run(fn ($type, $line) => $this->onOutput($type, $line));
 
-        if (! $process->isSuccessful()) {
-            $this->onError($process);
+        if ($process->isSuccessful()) {
+            $this->onSuccess($process);
+
+            return;
         }
 
-        $this->onSuccess($process);
+        $this->onError($process);
     }
 
     /**
@@ -155,23 +158,20 @@ abstract class SkeemaBaseCommand extends Command
         $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\] (.*)$/m';
         preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
 
-        if(empty($matches)) {
+        if(blank($matches)) {
             $this->info($buffer);
+
             return;
         }
 
-        foreach ($matches as $match) {
-            $time = $match[1];
+        collect($matches)->each(function ($match) {
             $message = $match[3];
 
-            $level = match($match[2]) {
-                'ERROR' => 'error',
-                'WARN' => 'warn',
-                default => 'info',
-            };
+            $lowerLevel = Str::of($match[2])->lower()->toString();
+            $upperLevel = Str::of($match[2])->upper()->toString();
 
-            $this->{$level}(Str::of('[' . strtoupper($level) . ']' . $message));
-        }
+            $this->{$lowerLevel}(Str::of('[' . $upperLevel . ']' . $message));
+        });
     }
 
     /**
@@ -247,16 +247,11 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function serializeArgument($value, $key): string
     {
-        if ($value === false) {
-            return "";
-        }
-
-        if ($value === true) {
-            return "--{$key}";
-        }
-
-        $escapedValue = escapeshellarg($value);
-        return "--{$key}={$escapedValue}";
+        return match (true) {
+            $value === false => "",
+            $value === true => "--{$key}",
+            default => "--{$key}=" . escapeshellarg($value),
+        };
     }
 
     /**

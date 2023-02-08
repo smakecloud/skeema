@@ -32,18 +32,16 @@ class ServiceProvider extends IlluminateServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/skeema.php', 'skeema');
 
-        $this->app->bind('command.skeema:init', SkeemaInitCommand::class);
-        $this->app->bind('command.skeema:pull', SkeemaPullCommand::class);
-        $this->app->bind('command.skeema:push', SkeemaPushCommand::class);
-        $this->app->bind('command.skeema:diff', SkeemaDiffCommand::class);
-        $this->app->bind('command.skeema:lint', SkeemaLintCommand::class);
+        $commands = collect([
+            'command.skeema:init' => SkeemaInitCommand::class,
+            'command.skeema:pull' => SkeemaPullCommand::class,
+            'command.skeema:push' => SkeemaPushCommand::class,
+            'command.skeema:diff' => SkeemaDiffCommand::class,
+            'command.skeema:lint' => SkeemaLintCommand::class,
+        ])->each(function ($class, $key) {
+            $this->app->singleton($key, $class);
+        });
 
-        $this->commands([
-            'command.skeema:init',
-            'command.skeema:pull',
-            'command.skeema:push',
-            'command.skeema:diff',
-            'command.skeema:lint',
-        ]);
+        $this->commands($commands->keys()->toArray());
     }
 }
