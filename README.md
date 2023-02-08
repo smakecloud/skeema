@@ -222,4 +222,4 @@ The MIT License (MIT). Please see [License File](LICENSE) for more information.
 
 - [Skeema](https://www.skeema.io/)
 - [Daursu](https://github.com/Daursu)
-- [Smakecloud](https://github.com/smakecloud)
+- [Smake® IT GmbH](https://github.com/smakecloud)
