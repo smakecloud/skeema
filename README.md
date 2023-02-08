@@ -200,9 +200,18 @@ composer test
 
 ## ToDos
 
-- [ ] Add support for Skeema's `--alter-wrapper` option
+- [ ] Add Tests for Skeema's `--alter-wrapper` option
 - [ ] 100% test coverage
 - [ ] Add support for ssl connections
+- [ ] Respect lint config overwrites for diff and push
+
+## Disclaimer
+
+This package is not affiliated with Skeema in any way.
+
+Read the documentation of Skeema before using this package !
+
+We don't take any responsibility for any damage caused by this package.
 
 ## License
 
