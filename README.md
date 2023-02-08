@@ -178,3 +178,19 @@ See https://www.skeema.io/docs/cloud-linter
 ```bash
 php artisan skeema:cloud-linter
 ```
+
+## Testing
+
+``` bash
+composer test
+```
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+## Credits
+
+- [Skeema](https://www.skeema.io/)
+- [Daursu](https://github.com/Daursu)
+- [Smakecloud](https://github.com/smakecloud)
