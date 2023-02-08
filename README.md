@@ -215,7 +215,7 @@ We don't take any responsibility for any damage caused by this package.
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). Please see [License File](LICENSE) for more information.
 
 ## Credits
 
