@@ -6,10 +6,13 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
+use Smakecloud\Skeema\Traits\SerializesArguments;
 use Symfony\Component\Process\Process;
 
 abstract class SkeemaBaseCommand extends Command
 {
+    use SerializesArguments;
+
     public const SKEEMA_ENV_NAME = 'laravel';
     /**
      * The filesystem instance.
@@ -244,38 +247,6 @@ abstract class SkeemaBaseCommand extends Command
             'alter-wrapper' => $this->getAlterWrapperCommand(),
             'alter-wrapper-min-size' => $this->getConfig(('skeema.alter_wrapper.min_size'), '0'),
         ];
-    }
-
-    /**
-     * Serialize the given arguments.
-     *
-     * @param  array  $args
-     * @return string
-     */
-    protected function serializeArgs(array $args): string
-    {
-        return implode(
-            ' ',
-            collect($args)
-                ->map([$this, 'serializeArgument'])
-                ->toArray()
-        );
-    }
-
-    /**
-     * Serialize the given argument.
-     *
-     * @param  mixed  $value
-     * @param  string  $key
-     * @return string
-     */
-    protected function serializeArgument($value, $key): string
-    {
-        return match (true) {
-            $value === false => "",
-            $value === true => "--{$key}",
-            default => "--{$key}=" . escapeshellarg($value),
-        };
     }
 
     /**
