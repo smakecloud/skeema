@@ -18,12 +18,6 @@ abstract class SkeemaBaseCommand extends Command
 {
     use SerializesArguments;
 
-    public const ERROR_CODES = [
-        'SKEEMA_COMMAND_CANCELLED' => 1,
-        'SKEEMA_CONFIG_NOT_FOUND' => 2,
-        'SKEEMA_UNKNOWN_PROCESS_EXCEPTION' => 3
-    ];
-
     /**
      * The skeema environment name.
      * Used in config file overvwrites and command line arguments.
@@ -74,21 +68,18 @@ abstract class SkeemaBaseCommand extends Command
             $this->info('Running: ' . $command);
 
             $this->runProcess($command);
-        } catch (\Smakecloud\Skeema\Exceptions\CommandCancelledException $e) {
-            $this->error('Command cancelled.');
-
-            $exitCode = self::ERROR_CODES['SKEEMA_COMMAND_CANCELLED'];
-        } catch (\Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException $e) {
+        } catch (\Smakecloud\Skeema\Exceptions\ExceptionWithExitCode $e) {
             $this->error($e->getMessage());
 
-            $exitCode = self::ERROR_CODES['SKEEMA_CONFIG_NOT_FOUND'];
-        } catch (\Exception $e) {
-            $this->error($e->getMessage());
-
-            $exitCode = self::ERROR_CODES['SKEEMA_UNKNOWN_PROCESS_EXCEPTION'];
-        } finally {
-            $this->info('Done.');
+            $exitCode = $e->getExitCode();
         }
+        // @codeCoverageIgnoreStart
+        catch (\Exception $e) {
+            $this->error($e->getMessage());
+
+            $exitCode = -1;
+        }
+        // @codeCoverageIgnoreEnd
 
         return $exitCode;
     }
@@ -233,12 +224,12 @@ abstract class SkeemaBaseCommand extends Command
         }
 
         collect($matches)->each(function ($match) {
-            $message = $match[3];
+            $message = trim($match[3]);
 
             $lowerLevel = Str::of($match[2])->lower()->toString();
             $upperLevel = Str::of($match[2])->upper()->toString();
 
-            $this->{$lowerLevel}(Str::of('[' . $upperLevel . ']' . $message));
+            $this->{$lowerLevel}(Str::of('[' . $upperLevel . '] ' . $message));
         });
     }
 

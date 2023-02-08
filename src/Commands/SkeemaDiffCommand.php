@@ -3,6 +3,7 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
+use Symfony\Component\Process\Process;
 
 /**
  * Class SkeemaDiffCommand
@@ -10,7 +11,7 @@ use Illuminate\Database\Connection;
  */
 class SkeemaDiffCommand extends SkeemaBaseCommand
 {
-    protected $signature = 'skeema:diff {--connection=}';
+    protected $signature = 'skeema:diff {--ignore-warnings} {--connection=}';
 
     protected $description = 'Diff the database schema ';
 
@@ -21,6 +22,20 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
         return $this->getSkeemaCommand('diff ' . static::SKEEMA_ENV_NAME, [
 
         ]);
+    }
+
+    /**
+     * Reference: https://www.skeema.io/docs/commands/diff/
+     */
+    protected function onError(Process $process)
+    {
+        if ($process->getExitCode() >= 2) {
+            throw new \Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithErrorsException();
+        } else {
+            if(!$this->option('ignore-warnings')) {
+                throw new \Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithWarningsException();
+            }
+        }
     }
 
 }

@@ -2,9 +2,15 @@
 
 namespace Smakecloud\Skeema\Exceptions;
 
-use Exception;
-
-class CommandCancelledException extends Exception
+class CommandCancelledException extends ExceptionWithExitCode
 {
+    public function __construct()
+    {
+        parent::__construct('Command cancelled.');
+    }
 
+    public function getExitCode(): int
+    {
+        return 1;
+    }
 }

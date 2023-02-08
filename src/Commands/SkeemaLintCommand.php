@@ -3,6 +3,7 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
+use Symfony\Component\Process\Process;
 
 /**
  * Class SkeemaLintCommand
@@ -10,7 +11,7 @@ use Illuminate\Database\Connection;
  */
 class SkeemaLintCommand extends SkeemaBaseCommand
 {
-    protected $signature = 'skeema:lint {--connection=}';
+    protected $signature = 'skeema:lint {--ignore-warnings} {--connection=}';
 
     protected $description = 'Lint the database schema ';
 
@@ -34,5 +35,17 @@ class SkeemaLintCommand extends SkeemaBaseCommand
             })->toArray();
     }
 
-
+    /**
+     * Reference: https://www.skeema.io/docs/commands/lint/
+     */
+    protected function onError(Process $process)
+    {
+        if ($process->getExitCode() >= 2) {
+            throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException();
+        } else {
+            if(!$this->option('ignore-warnings')) {
+                throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithWarningsException();
+            }
+        }
+    }
 }

@@ -11,7 +11,10 @@ class SkeemaPullCommandTest extends TestCase
     public function it_exits_with_the_correct_error_code_if_skeema_config_could_not_be_found()
     {
         $this->artisan('skeema:pull')
-            ->assertExitCode(SkeemaBaseCommand::ERROR_CODES['SKEEMA_CONFIG_NOT_FOUND']);
+            ->expectsOutputToContain('Skeema config file not found at')
+            ->assertExitCode(
+                (new \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException(''))->getExitCode()
+            );
     }
 
     /** @test */

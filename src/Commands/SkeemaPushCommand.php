@@ -3,6 +3,7 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
+use Symfony\Component\Process\Process;
 
 /**
  * Class SkeemaPushCommand
@@ -22,6 +23,18 @@ class SkeemaPushCommand extends SkeemaBaseCommand
         return $this->getSkeemaCommand('push ' . static::SKEEMA_ENV_NAME, [
 
         ]);
+    }
+
+    /**
+     * Reference: https://www.skeema.io/docs/commands/lint/
+     */
+    protected function onError(Process $process)
+    {
+        if ($process->getExitCode() >= 2) {
+            throw new \Smakecloud\Skeema\Exceptions\SkeemaPushFatalErrorException();
+        } else {
+            throw new \Smakecloud\Skeema\Exceptions\SkeemaPushCouldNotUpdateTableException();
+        }
     }
 
 }

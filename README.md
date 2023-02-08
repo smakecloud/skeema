@@ -156,7 +156,7 @@ php artisan skeema:init
 Lint the schema files with your configured rules.
 
 ```bash
-php artisan skeema:lint
+php artisan skeema:lint {--ignore-warnings}
 ```
 
 ### Diffing the schema
@@ -164,7 +164,7 @@ php artisan skeema:lint
 Diff the schema files against the database.
 
 ```bash
-php artisan skeema:diff
+php artisan skeema:diff {--ignore-warnings}
 ```
 
 ### Pushing the schema

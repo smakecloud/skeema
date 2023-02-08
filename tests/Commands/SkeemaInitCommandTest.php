@@ -26,7 +26,9 @@ class SkeemaInitCommandTest extends TestCase
         $this->artisan('skeema:init')
             ->expectsConfirmation('Running skeema init will overwrite any existing schema files. Proceed?', 'no')
             ->expectsOutput('Command cancelled.')
-            ->assertExitCode(SkeemaBaseCommand::ERROR_CODES['SKEEMA_COMMAND_CANCELLED']);
+            ->assertExitCode(
+                (new \Smakecloud\Skeema\Exceptions\CommandCancelledException())->getExitCode()
+            );
 
         $this->artisan('skeema:init')
             ->expectsConfirmation('Running skeema init will overwrite any existing schema files. Proceed?', 'yes')
