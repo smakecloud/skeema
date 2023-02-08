@@ -17,11 +17,22 @@
     </include>
   </coverage>
   <testsuites>
-    <testsuite name="Laravel Skeema">
-      <directory>tests</directory>
+    <testsuite name="Laravel Skeema Commands">
+      <directory suffix="Test.php">./tests/Commands/</directory>
     </testsuite>
   </testsuites>
   <php>
-    <env name="APP_NAME" value="laravel-skeema"/>
+    <env name="APP_NAME" value="skeema"/>
+    <env name="APP_KEY" value="AckfSECXIvnK5r28GVIWUAxmbBSjTsmF"/>
+    <env name="APP_ENV" value="testing"/>
+    <env name="APP_DEBUG" value="true"/>
+    <env name="APP_URL" value="http://localhost"/>
+    <env name="LOG_CHANNEL" value="stack"/>
+    <env name="DB_CONNECTION" value="mysql"/>
+    <env name="DB_HOST" value="127.0.0.1"/>
+    <env name="DB_PORT" value="3306"/>
+    <env name="DB_DATABASE" value="skeema_test"/>
+    <env name="DB_USERNAME" value="root"/>
+    <env name="DB_PASSWORD" value=""/>
   </php>
 </phpunit>
