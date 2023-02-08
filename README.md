@@ -6,6 +6,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://packagist.org/packages/robinvdvleuten/laravel-skeema)
 
 This package provides a Laravel wrapper around the [Skeema](https://www.skeema.io/) tool.
+
 Skeema is a tool for managing MySQL database schemas.
 It allows you to define your database schema in simple SQL files,
 and then use Skeema to keep your database schema in sync.
