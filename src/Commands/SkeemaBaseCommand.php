@@ -102,7 +102,7 @@ abstract class SkeemaBaseCommand extends Command
     }
 
     /**
-     * Run the given process.
+     * Run the process.
      *
      * @param  string  $command
      * @return void
@@ -113,13 +113,7 @@ abstract class SkeemaBaseCommand extends Command
             $this->processFactory,
             $command,
             $this->getSkeemaDir(),
-            [
-                'LARAVEL_SKEEMA_DB_HOST' => $this->getConnection()->getConfig('host'),
-                'LARAVEL_SKEEMA_DB_PORT' => $this->getConnection()->getConfig('port'),
-                'LARAVEL_SKEEMA_DB_USER' => $this->getConnection()->getConfig('username'),
-                'LARAVEL_SKEEMA_DB_PASSWORD' => $this->getConnection()->getConfig('password'),
-                'LARAVEL_SKEEMA_DB_SCHEMA' => $this->getConnection()->getConfig('database'),
-            ]
+            $this->getProcessEnvironment()
         );
 
         $process->run(function ($type, $line) {
@@ -131,6 +125,22 @@ abstract class SkeemaBaseCommand extends Command
         }
 
         $this->onSuccess($process);
+    }
+
+    /**
+     * Gets the environment variables to pass to the Skeema process.
+     *
+     * @return array
+     */
+    protected function getProcessEnvironment()
+    {
+        return [
+            'LARAVEL_SKEEMA_DB_HOST' => $this->getConnection()->getConfig('host'),
+            'LARAVEL_SKEEMA_DB_PORT' => $this->getConnection()->getConfig('port'),
+            'LARAVEL_SKEEMA_DB_USER' => $this->getConnection()->getConfig('username'),
+            'LARAVEL_SKEEMA_DB_PASSWORD' => $this->getConnection()->getConfig('password'),
+            'LARAVEL_SKEEMA_DB_SCHEMA' => $this->getConnection()->getConfig('database'),
+        ];
     }
 
     /**
@@ -222,18 +232,31 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function serializeArgs(array $args): string
     {
-        return implode(' ', collect($args)->map(function ($value, $key) {
-            if($value === false) {
-                return "";
-            }
+        return implode(' ', collect($args)
+            ->map([$this, 'serializeArgument'])
+            ->toArray()
+        );
+    }
 
-            if($value === true) {
-                return "--{$key}";
-            }
+    /**
+     * Serialize the given argument.
+     *
+     * @param  mixed  $value
+     * @param  string  $key
+     * @return string
+     */
+    protected function serializeArgument($value, $key): string
+    {
+        if ($value === false) {
+            return "";
+        }
 
-            $escpv = escapeshellarg($value);
-            return "--{$key}={$escpv}";
-        })->toArray());
+        if ($value === true) {
+            return "--{$key}";
+        }
+
+        $escapedValue = escapeshellarg($value);
+        return "--{$key}={$escapedValue}";
     }
 
     /**
