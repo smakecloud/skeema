@@ -225,7 +225,7 @@ abstract class SkeemaBaseCommand extends Command
      */
     private function getAlterWrapperCommand()
     {
-        return Str::of('gh-ost')
+        return Str::of($this->getConfig(('skeema.alter_wrapper.bin'), 'gh-ost'))
             ->append(' --execute')
             ->append(' --alter {CLAUSES}')
             ->append(' --schema={SCHEMA}')
@@ -244,12 +244,23 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function getBaseArgs(): array
     {
-        return [
+        $baseArgs = [
             'default-character-set' => $this->getConnection()->getConfig('charset'),
-            'default-collation' => $this->getConnection()->getConfig('collation'),
-            'alter-wrapper' => $this->getAlterWrapperCommand(),
-            'alter-wrapper-min-size' => $this->getConfig(('skeema.alter_wrapper.min_size'), '0'),
+            'default-collation' => $this->getConnection()->getConfig('collation')
         ];
+
+        if ($this->getConnection()->getConfig('sslmode') === 'require') {
+            $baseArgs['ssl-ca'] = $this->getConnection()->getConfig('sslrootcert');
+            $baseArgs['ssl-cert'] = $this->getConnection()->getConfig('sslcert');
+            $baseArgs['ssl-key'] = $this->getConnection()->getConfig('sslkey');
+        }
+
+        if($this->getConfig('skeema.alter_wrapper.enabled', false)) {
+            $baseArgs['alter-wrapper'] = $this->getAlterWrapperCommand();
+            $baseArgs['alter-wrapper-min-size'] = $this->getConfig(('skeema.alter_wrapper.min_size'), '0');
+        }
+
+        return $baseArgs;
     }
 
     /**

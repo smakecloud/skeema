@@ -21,6 +21,16 @@ return [
      * Alter Wrapper
      */
     'alter_wrapper' => [
+        /*
+         * Enable the alter wrapper.
+         */
+        'enabled' => env('SKEEMA_WRAPPER_ENABLED', false),
+
+        /*
+         * The path to the wrapper binary.
+         */
+        'bin' => env('SKEEMA_WRAPPER_BIN', 'gh-ost'),
+
         /**
          * Any table smaller than this size (in bytes) will ignore the alter-wrapper option. This permits skipping the overhead of external OSC tools when altering small tables.
          */
