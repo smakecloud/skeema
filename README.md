@@ -1,7 +1,7 @@
 # Laravel Skeema
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://packagist.org/packages/robinvdvleuten/laravel-skeema)
 [![phpunit](https://github.com/smakecloud/skeema/actions/workflows/phpunit.yml/badge.svg)](https://github.com/smakecloud/skeema/actions/workflows/phpunit.yml)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://packagist.org/packages/robinvdvleuten/laravel-skeema)
 [![Quality Score](https://img.shields.io/scrutinizer/g/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://scrutinizer-ci.com/g/robinvdvleuten/laravel-skeema)
 [![Total Downloads](https://img.shields.io/packagist/dt/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://packagist.org/packages/robinvdvleuten/laravel-skeema)
 
@@ -46,6 +46,16 @@ return [
      * Alter Wrapper
      */
     'alter_wrapper' => [
+        /*
+         * Enable the alter wrapper.
+         */
+        'enabled' => env('SKEEMA_WRAPPER_ENABLED', false),
+
+        /*
+         * The path to the wrapper binary.
+         */
+        'bin' => env('SKEEMA_WRAPPER_BIN', 'gh-ost'),
+
         /**
          * Any table smaller than this size (in bytes) will ignore the alter-wrapper option. This permits skipping the overhead of external OSC tools when altering small tables.
          */
