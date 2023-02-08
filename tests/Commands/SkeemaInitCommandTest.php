@@ -17,7 +17,7 @@ class SkeemaInitCommandTest extends TestCase
     public function it_generated_a_skeema_config()
     {
         $this->artisan('skeema:init')
-            ->execute();
+            ->assertSuccessful();
 
         $this->assertFileExists($this->getSkeemaDir() . '/.skeema');
         $this->assertFileEquals(
@@ -30,7 +30,7 @@ class SkeemaInitCommandTest extends TestCase
     public function it_generated_sql_schemas()
     {
         $this->artisan('skeema:init')
-            ->execute();
+            ->assertSuccessful();
 
         $this->assertFileExists($this->getSkeemaDir() . '/migrations.sql');
         $this->assertFileExists($this->getSkeemaDir() . '/test1.sql');
