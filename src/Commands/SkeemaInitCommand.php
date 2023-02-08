@@ -35,7 +35,7 @@ class SkeemaInitCommand extends SkeemaBaseCommand
      */
     private function getSkeemaConfig()
     {
-        return Str::of("generator=skeema:1.9.0-community" . PHP_EOL)
+        return Str::of("generator=skeema:" . $this->getSkeemaVersion() . PHP_EOL)
             ->append("[" . static::SKEEMA_ENV_NAME . "]" . PHP_EOL)
             ->append("flavor=mysql:5.7" . PHP_EOL)
             ->append("host=\$LARAVEL_SKEEMA_DB_HOST" . PHP_EOL)

@@ -93,13 +93,35 @@ abstract class SkeemaBaseCommand extends Command
     }
 
     /**
+     * Get the Skeema version.
+     *
+     * @return string
+     */
+    protected function getSkeemaVersion(): string
+    {
+        $process = call_user_func(
+            $this->processFactory,
+            'skeema --version',
+            $this->getSkeemaDir(),
+            $this->getProcessEnvironment()
+        );
+
+        $process->run();
+
+        return Str::of(Str::of($process->getOutput())
+            ->explode(' ')
+            ->get(2)
+        )->beforeLast(',')->toString();
+    }
+
+    /**
      * Ensure the skeema directory exists.
      *
      * @return void
      */
     protected function ensureSkeemaDirExists()
     {
-        if (! $this->files->exists($this->getSkeemaDir())) {
+        if (!$this->files->exists($this->getSkeemaDir())) {
             $this->files->makeDirectory($this->getSkeemaDir(), 0755, true);
         }
     }
@@ -158,7 +180,7 @@ abstract class SkeemaBaseCommand extends Command
         $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\] (.*)$/m';
         preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
 
-        if(blank($matches)) {
+        if (blank($matches)) {
             $this->info($buffer);
 
             return;
@@ -232,9 +254,11 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function serializeArgs(array $args): string
     {
-        return implode(' ', collect($args)
-            ->map([$this, 'serializeArgument'])
-            ->toArray()
+        return implode(
+            ' ',
+            collect($args)
+                ->map([$this, 'serializeArgument'])
+                ->toArray()
         );
     }
 
@@ -263,7 +287,7 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function getSkeemaCommand(string $command, array $arguments = [], bool $withBaseArgs = true): string
     {
-       $command = Str::of($this->getConfig('skeema.bin', 'skeema'))
+        $command = Str::of($this->getConfig('skeema.bin', 'skeema'))
             ->append(' ' . $command)
             ->append(' ' . $this->serializeArgs($arguments));
 
