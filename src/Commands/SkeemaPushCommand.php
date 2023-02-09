@@ -27,6 +27,7 @@ class SkeemaPushCommand extends SkeemaBaseCommand
         . ' {--allow-unsafe : Permit generating ALTER or DROP operations that are potentially destructive}'
         . ' {--safe-below-size= : Always permit generating destructive operations for tables below this size in bytes}'
         . ' {--skip-verify : Skip Test all generated ALTER statements on temp schema to verify correctness}'
+        . ' {--skip-lint : Skip Check modified objects for problems before proceeding}'
         . ' {--dry-run : Output DDL but don’t run it; equivalent to skeema diff}'
         . ' {--foreign-key-checks : Force the server to check referential integrity of any new foreign key}'
         . ' {--force}'
@@ -122,7 +123,7 @@ class SkeemaPushCommand extends SkeemaBaseCommand
         $baseRules = $this->getConfig('skeema.lint.rules', []);
         $pushRules = $this->getConfig('skeema.lint.push', []);
 
-        if ($pushRules === false || !is_array($pushRules) || !is_array($baseRules)) {
+        if ($this->option('skip-lint') || $pushRules === false || !is_array($pushRules) || !is_array($baseRules)) {
             $args['skip-lint'] = true;
 
             return $args;
