@@ -26,7 +26,6 @@ php artisan vendor:publish --provider="SmakeCloud\Skeema\SkeemaServiceProvider"
 ``` php
 <?php
 
-
 return [
     /*
      * The path to the skeema binary.
@@ -69,7 +68,7 @@ return [
             '--max-load=Threads_running=25',
             '--critical-load=Threads_running=1000',
             '--chunk-size=1000',
-            '--throttle-control-replicas=' . env('DB_REPLICAS'),
+            '--throttle-control-replicas='.env('DB_REPLICAS'),
             '--max-lag-millis=1500',
             '--verbose',
             '--assume-rbr',
@@ -109,12 +108,12 @@ return [
             \Smakecloud\Skeema\Lint\PkRule::class => 'warning',
             \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'warning',
 
-            /**
-             * These rules are disabled by default
-             * because they are not available in the Community edition of Skeema
-             *
-             * https://www.skeema.io/download/
-             */
+        /**
+         * These rules are disabled by default
+         * because they are not available in the Community edition of Skeema
+         *
+         * https://www.skeema.io/download/
+         */
 
             // \Smakecloud\Skeema\Lint\HasTriggerRule::class => 'error',
             // \Smakecloud\Skeema\Lint\HasViewRule::class => 'error',
@@ -122,7 +121,7 @@ return [
 
         /**
          * Linting rules for diff
-         * Sett to false to disable linting for diff
+         * Set to false to disable linting for diff
          * See https://www.skeema.io/docs/commands/diff
          */
         'diff' => [
@@ -131,13 +130,13 @@ return [
 
         /**
          * Linting rules for push
-         * Sett to false to disable linting for push
+         * Set to false to disable linting for push
          * See https://www.skeema.io/docs/commands/push
          */
         'push' => [
             // \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'error',
         ],
-    ]
+    ],
 ];
 ```
 
@@ -148,7 +147,7 @@ return [
 Run this once against your production database to generate the initial schema files.
 
 ```bash
-php artisan skeema:init
+php artisan skeema:init {--force}
 ```
 
 ### Linting the schema
@@ -172,7 +171,7 @@ php artisan skeema:diff {--ignore-warnings}
 Push the schema files to the database.
 
 ```bash
-php artisan skeema:push
+php artisan skeema:push {--force}
 ```
 
 ### Pulling the schema
@@ -183,27 +182,20 @@ Pull the schema files from the database.
 php artisan skeema:pull
 ```
 
-
-### Cloud Linter
-
-Lint the schema files with your configured rules in CI.
-See https://www.skeema.io/docs/cloud-linter
-
-```bash
-php artisan skeema:cloud-linter
-```
-
 ## Testing
 
 ``` bash
 composer test
 ```
 
+**With coverage**
+
+``` bash
+composer test:coverage
+```
+
 ## ToDos
 
-- [ ] Add Tests for Skeema's `--alter-wrapper` option
-- [ ] 100% test coverage
-- [ ] Add support for ssl connections
 - [ ] Respect lint config overwrites for diff and push
 
 ## Disclaimer
