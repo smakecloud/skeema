@@ -265,7 +265,7 @@ abstract class SkeemaBaseCommand extends Command
             ->append(' --table={TABLE}')
             ->append(' --host={HOST}')
             ->append(' --user={USER}')
-            ->append(' --password={PASSWORD}')
+            ->append(' --password={PASSWORDX}')
             ->append(' '.implode(' ', $this->getConfig('skeema.alter_wrapper.params', [])))
             ->toString();
     }
