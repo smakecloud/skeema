@@ -15,6 +15,11 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         . ' {--skip-format : Skip formatting the schema files}'
         . ' {--strip-definer= : Remove DEFINER clauses from *.sql files}'
         . ' {--strip-partitioning : Remove PARTITION BY clauses from *.sql files}'
+        . ' {--allow-auto-inc= : List of allowed auto_increment column data types for lint-auto-inc}'
+        . ' {--allow-charset= :	List of allowed character sets for lint-charset}'
+        . ' {--allow-compression= : List of allowed compression settings for lint-compression}'
+        . ' {--allow-definer= : List of allowed routine definers for lint-definer}'
+        . ' {--allow-engine= : List of allowed storage engines for lint-engine}'
         . ' {--update-views : Reformat views in canonical single-line form}'
         . ' {--ignore-warnings : Exit with status 0 even if warnings are found}'
         . ' {--output-format=default : Output format (default, github, or quiet)}'
@@ -47,6 +52,26 @@ class SkeemaLintCommand extends SkeemaBaseCommand
 
         if ($this->option('update-views')) {
             $args['update-views'] = true;
+        }
+
+        if ($this->option('allow-auto-inc')) {
+            $args['allow-auto-inc'] = $this->option('allow-auto-inc');
+        }
+
+        if ($this->option('allow-charset')) {
+            $args['allow-charset'] = $this->option('allow-charset');
+        }
+
+        if ($this->option('allow-compression')) {
+            $args['allow-compression'] = $this->option('allow-compression');
+        }
+
+        if ($this->option('allow-definer')) {
+            $args['allow-definer'] = $this->option('allow-definer');
+        }
+
+        if ($this->option('allow-engine')) {
+            $args['allow-engine'] = $this->option('allow-engine');
         }
 
         return [

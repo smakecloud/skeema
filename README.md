@@ -184,20 +184,25 @@ Usage:
   skeema:lint [options]
 
 Options:
-      --skip-format                    Skip formatting the schema files
-      --strip-definer[=STRIP-DEFINER]  Remove DEFINER clauses from *.sql files
-      --strip-partitioning             Remove PARTITION BY clauses from *.sql files
-      --update-views                   Reformat views in canonical single-line form
-      --ignore-warnings                Exit with status 0 even if warnings are found
-      --output-format[=OUTPUT-FORMAT]  Output format for lint results. Valid values: default, github, quiet
+      --skip-format                            Skip formatting the schema files
+      --strip-definer[=STRIP-DEFINER]          Remove DEFINER clauses from *.sql files
+      --strip-partitioning                     Remove PARTITION BY clauses from *.sql files
+      --allow-auto-inc[=ALLOW-AUTO-INC]        List of allowed auto_increment column data types for lint-auto-inc
+      --allow-charset[=ALLOW-CHARSET]          List of allowed character sets for lint-charset
+      --allow-compression[=ALLOW-COMPRESSION]  List of allowed compression settings for lint-compression
+      --allow-definer[=ALLOW-DEFINER]          List of allowed routine definers for lint-definer
+      --allow-engine[=ALLOW-ENGINE]            List of allowed storage engines for lint-engine
+      --update-views                           Reformat views in canonical single-line form
+      --ignore-warnings                        Exit with status 0 even if warnings are found
+      --output-format[=OUTPUT-FORMAT]          Output format for lint results. Valid values: default, github, quiet
       --connection[=CONNECTION]
-  -h, --help                           Display help for the given command. When no command is given display help for the list command
-  -q, --quiet                          Do not output any message
-  -V, --version                        Display this application version
-      --ansi|--no-ansi                 Force (or disable --no-ansi) ANSI output
-  -n, --no-interaction                 Do not ask any interactive question
-      --env[=ENV]                      The environment the command should run under
-  -v|vv|vvv, --verbose                 Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+  -h, --help                                   Display help for the given command. When no command is given display help for the list command
+  -q, --quiet                                  Do not output any message
+  -V, --version                                Display this application version
+      --ansi|--no-ansi                         Force (or disable --no-ansi) ANSI output
+  -n, --no-interaction                         Do not ask any interactive question
+      --env[=ENV]                              The environment the command should run under
+  -v|vv|vvv, --verbose                         Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 
 ### Diffing the schema
