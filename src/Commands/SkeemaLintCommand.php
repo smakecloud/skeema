@@ -84,7 +84,7 @@ class SkeemaLintCommand extends SkeemaBaseCommand
             collect($matches)->each(function ($match) {
                 $level = match(strtolower(trim($match[2]))) {
                     'error' => 'error',
-                    'warning' => 'warning',
+                    'warn' => 'warning',
                     default => 'notice',
                 };
 
