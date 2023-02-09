@@ -123,5 +123,4 @@ class SkeemaLintCommandTest extends TestCase
                 (new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException())->getExitCode()
             );
     }
-
 }

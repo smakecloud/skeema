@@ -75,5 +75,4 @@ class TestCase extends \Orchestra\Testbench\TestCase
         $app['env'] = 'production';
         $app->config->set('app.env', 'production');
     }
-
 }

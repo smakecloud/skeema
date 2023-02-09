@@ -95,7 +95,7 @@ return [
 
         /**
          * Linting rules for diff
-         * Sett to false to disable linting for diff
+         * Set to false to disable linting for diff
          * See https://www.skeema.io/docs/commands/diff
          */
         'diff' => [
@@ -104,7 +104,7 @@ return [
 
         /**
          * Linting rules for push
-         * Sett to false to disable linting for push
+         * Set to false to disable linting for push
          * See https://www.skeema.io/docs/commands/push
          */
         'push' => [

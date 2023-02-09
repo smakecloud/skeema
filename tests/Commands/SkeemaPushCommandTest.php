@@ -88,7 +88,7 @@ class SkeemaPushCommandTest extends TestCase
         config()->set('skeema.alter_wrapper.min_size', 0);
         config()->set('skeema.alter_wrapper.params', [
             '--max-load=Threads_running=25',
-            '--critical-load=Threads_running=1000'
+            '--critical-load=Threads_running=1000',
         ]);
 
         $this->artisan('skeema:push')

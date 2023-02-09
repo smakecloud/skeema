@@ -243,6 +243,8 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Called on error.
+     *
+     * @codeCoverageIgnore
      */
     protected function onError(Process $process)
     {
@@ -325,7 +327,6 @@ abstract class SkeemaBaseCommand extends Command
 
             throw new \Smakecloud\Skeema\Exceptions\CommandCancelledException();
         }
-
     }
 
     /**
