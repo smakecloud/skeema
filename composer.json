@@ -1,6 +1,6 @@
 {
-    "version": "1.0.0",
     "name": "smakecloud/skeema",
+    "homepage": "https://github.com/smakecloud/skeema",
     "description": "Laravel Skeema Migrations",
     "require": {
         "php": "^8.0",

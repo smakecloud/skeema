@@ -1,8 +1,7 @@
 # Laravel Skeema
 
 [![phpunit](https://github.com/smakecloud/skeema/actions/workflows/phpunit.yml/badge.svg)](https://github.com/smakecloud/skeema/actions/workflows/phpunit.yml)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://packagist.org/packages/robinvdvleuten/laravel-skeema)
-[![Quality Score](https://img.shields.io/scrutinizer/g/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://scrutinizer-ci.com/g/robinvdvleuten/laravel-skeema)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/smakecloud/skeema.svg?style=flat-square&include_prereleases)](https://packagist.org/packages/smakecloud/skeema)
 [![Total Downloads](https://img.shields.io/packagist/dt/robinvdvleuten/laravel-skeema.svg?style=flat-square)](https://packagist.org/packages/robinvdvleuten/laravel-skeema)
 
 This package provides a Laravel wrapper around the [Skeema](https://www.skeema.io/) tool.
