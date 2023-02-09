@@ -92,7 +92,7 @@ class SkeemaLintCommand extends SkeemaBaseCommand
                 $line = trim($match[4]);
                 $message = trim($match[5]);
 
-                $this->info("::{$level} file={$file},line={$line}::{$message}");
+                $this->output->writeln("::{$level} file={$file},line={$line}::{$message}");
             });
         } else {
             return parent::onOutput($type, $buffer);
