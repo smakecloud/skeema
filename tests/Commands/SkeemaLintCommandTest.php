@@ -39,7 +39,7 @@ class SkeemaLintCommandTest extends TestCase
             \Smakecloud\Skeema\Lint\CharsetRule::class => 'ignore',
         ]);
 
-        $this->artisan('skeema:lint')
+        $this->artisan('skeema:lint --skip-format')
             ->assertExitCode(0);
     }
 

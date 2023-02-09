@@ -11,7 +11,13 @@ use Symfony\Component\Process\Process;
  */
 class SkeemaLintCommand extends SkeemaBaseCommand
 {
-    protected $signature = 'skeema:lint {--ignore-warnings} {--connection=}';
+    protected $signature = 'skeema:lint'
+        . ' {--skip-format : Skip formatting the schema files}'
+        . ' {--strip-definer= : Remove DEFINER clauses from *.sql files}'
+        . ' {--strip-partitioning : Remove PARTITION BY clauses from *.sql files}'
+        . ' {--update-views : Reformat views in canonical single-line form}'
+        . ' {--ignore-warnings : Exit with status 0 even if warnings are found}'
+        . ' {--connection=}';
 
     protected $description = 'Lint the database schema ';
 
@@ -19,10 +25,33 @@ class SkeemaLintCommand extends SkeemaBaseCommand
     {
         $this->ensureSkeemaConfigFileExists();
 
-        return $this->getSkeemaCommand('lint '.static::SKEEMA_ENV_NAME, [
+        return $this->getSkeemaCommand('lint '.static::SKEEMA_ENV_NAME, $this->makeArgs());
+    }
+
+    private function makeArgs(): array
+    {
+        $args = [];
+
+        if ($this->option('skip-format')) {
+            $args['skip-format'] = true;
+        }
+
+        if ($this->option('strip-definer')) {
+            $args['strip-definer'] = $this->option('strip-definer');
+        }
+
+        if ($this->option('strip-partitioning')) {
+            $args['strip-partitioning'] = true;
+        }
+
+        if ($this->option('update-views')) {
+            $args['update-views'] = true;
+        }
+
+        return [
             ...$this->lintRules(),
-            'skip-format' => true,
-        ]);
+            ...$args
+        ];
     }
 
     /**
