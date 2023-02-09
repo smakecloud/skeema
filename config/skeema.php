@@ -1,6 +1,5 @@
 <?php
 
-
 return [
     /*
      * The path to the skeema binary.
@@ -43,7 +42,7 @@ return [
             '--max-load=Threads_running=25',
             '--critical-load=Threads_running=1000',
             '--chunk-size=1000',
-            '--throttle-control-replicas=' . env('DB_REPLICAS'),
+            '--throttle-control-replicas='.env('DB_REPLICAS'),
             '--max-lag-millis=1500',
             '--verbose',
             '--assume-rbr',
@@ -83,12 +82,12 @@ return [
             \Smakecloud\Skeema\Lint\PkRule::class => 'warning',
             \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'warning',
 
-            /**
-             * These rules are disabled by default
-             * because they are not available in the Community edition of Skeema
-             *
-             * https://www.skeema.io/download/
-             */
+        /**
+         * These rules are disabled by default
+         * because they are not available in the Community edition of Skeema
+         *
+         * https://www.skeema.io/download/
+         */
 
             // \Smakecloud\Skeema\Lint\HasTriggerRule::class => 'error',
             // \Smakecloud\Skeema\Lint\HasViewRule::class => 'error',
@@ -111,5 +110,5 @@ return [
         'push' => [
             // \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'error',
         ],
-    ]
+    ],
 ];

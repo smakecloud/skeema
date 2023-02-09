@@ -19,7 +19,10 @@ class SkeemaLintCommand extends SkeemaBaseCommand
     {
         $this->ensureSkeemaConfigFileExists();
 
-        return $this->getSkeemaCommand('lint ' . static::SKEEMA_ENV_NAME, $this->lintRules());
+        return $this->getSkeemaCommand('lint '.static::SKEEMA_ENV_NAME, [
+            ...$this->lintRules(),
+            'skip-format' => true,
+        ]);
     }
 
     /**
@@ -43,7 +46,7 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         if ($process->getExitCode() >= 2) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException();
         } else {
-            if(!$this->option('ignore-warnings')) {
+            if (! $this->option('ignore-warnings')) {
                 throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithWarningsException();
             }
         }

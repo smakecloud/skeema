@@ -11,6 +11,7 @@ use Symfony\Component\Process\Process;
 
 /**
  * Class SkeemaBaseCommand.
+ *
  * @TODO: Once we drop Laravel 9 support, we can refactor the process factory to use:
  * https://laravel-news.com/process-facade-laravel-10
  */
@@ -65,7 +66,7 @@ abstract class SkeemaBaseCommand extends Command
         try {
             $command = $this->getCommand($this->getConnection());
 
-            $this->info('Running: ' . $command);
+            $this->info('Running: '.$command);
 
             $this->runProcess($command);
         } catch (\Smakecloud\Skeema\Exceptions\ExceptionWithExitCode $e) {
@@ -92,7 +93,7 @@ abstract class SkeemaBaseCommand extends Command
     protected function getSkeemaDir()
     {
         return $this->laravel->basePath(
-            $this->getConfig('skeema.dir', 'database' . DIRECTORY_SEPARATOR . 'skeema')
+            $this->getConfig('skeema.dir', 'database'.DIRECTORY_SEPARATOR.'skeema')
         );
     }
 
@@ -115,7 +116,6 @@ abstract class SkeemaBaseCommand extends Command
 
         return $this->laravel->get('config')->get($key, $default);
     }
-
 
     /**
      * Get the connection instance.
@@ -158,7 +158,7 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function ensureSkeemaDirExists()
     {
-        if (!$this->files->exists($this->getSkeemaDir())) {
+        if (! $this->files->exists($this->getSkeemaDir())) {
             $this->files->makeDirectory($this->getSkeemaDir(), 0755, true);
         }
     }
@@ -229,7 +229,7 @@ abstract class SkeemaBaseCommand extends Command
             $lowerLevel = Str::of($match[2])->lower()->toString();
             $upperLevel = Str::of($match[2])->upper()->toString();
 
-            $this->{$lowerLevel}(Str::of('[' . $upperLevel . '] ' . $message));
+            $this->{$lowerLevel}(Str::of('['.$upperLevel.'] '.$message));
         });
     }
 
@@ -254,17 +254,17 @@ abstract class SkeemaBaseCommand extends Command
      *
      * @return string
      */
-    private function getAlterWrapperCommand()
+    protected function getAlterWrapperCommand()
     {
         return Str::of($this->getConfig(('skeema.alter_wrapper.bin'), 'gh-ost'))
             ->append(' --execute')
             ->append(' --alter {CLAUSES}')
-            ->append(' --schema={SCHEMA}')
+            ->append(' --database={SCHEMA}')
             ->append(' --table={TABLE}')
             ->append(' --host={HOST}')
             ->append(' --user={USER}')
             ->append(' --password={PASSWORD}')
-            ->append(' ' . implode(' ', $this->getConfig('skeema.alter_wrapper.params', [])))
+            ->append(' '.implode(' ', $this->getConfig('skeema.alter_wrapper.params', [])))
             ->toString();
     }
 
@@ -276,19 +276,14 @@ abstract class SkeemaBaseCommand extends Command
     protected function getBaseArgs(): array
     {
         $baseArgs = [
-            'default-character-set' => $this->getConnection()->getConfig('charset'),
-            'default-collation' => $this->getConnection()->getConfig('collation')
+            // 'default-character-set' => $this->getConnection()->getConfig('charset'),
+            // 'default-collation' => $this->getConnection()->getConfig('collation'),
         ];
 
         if ($this->getConnection()->getConfig('sslmode') === 'require') {
             $baseArgs['ssl-ca'] = $this->getConnection()->getConfig('sslrootcert');
             $baseArgs['ssl-cert'] = $this->getConnection()->getConfig('sslcert');
             $baseArgs['ssl-key'] = $this->getConnection()->getConfig('sslkey');
-        }
-
-        if($this->getConfig('skeema.alter_wrapper.enabled', false)) {
-            $baseArgs['alter-wrapper'] = $this->getAlterWrapperCommand();
-            $baseArgs['alter-wrapper-min-size'] = $this->getConfig(('skeema.alter_wrapper.min_size'), '0');
         }
 
         return $baseArgs;
@@ -304,11 +299,11 @@ abstract class SkeemaBaseCommand extends Command
     protected function getSkeemaCommand(string $command, array $arguments = [], bool $withBaseArgs = true): string
     {
         $command = Str::of($this->getConfig('skeema.bin', 'skeema'))
-            ->append(' ' . $command)
-            ->append(' ' . $this->serializeArgs($arguments));
+            ->append(' '.$command)
+            ->append(' '.$this->serializeArgs($arguments));
 
         if ($withBaseArgs) {
-            $command->append(' ' . $this->serializeArgs($this->getBaseArgs()));
+            $command = $command->append(' '.$this->serializeArgs($this->getBaseArgs()));
         }
 
         return $command->toString();
@@ -324,14 +319,13 @@ abstract class SkeemaBaseCommand extends Command
         }
 
         if ($this->applicationIsRunningInProduction()) {
-            if ($this->confirm($warning . ' Proceed?', false)) {
+            if ($this->confirm($warning.' Proceed?', false)) {
                 return;
             }
 
             throw new \Smakecloud\Skeema\Exceptions\CommandCancelledException();
         }
 
-        return;
     }
 
     /**
@@ -344,9 +338,9 @@ abstract class SkeemaBaseCommand extends Command
 
     protected function ensureSkeemaConfigFileExists()
     {
-        $configFilePath = $this->getSkeemaDir() . DIRECTORY_SEPARATOR . '.skeema';
+        $configFilePath = $this->getSkeemaDir().DIRECTORY_SEPARATOR.'.skeema';
 
-        if (!$this->files->exists($configFilePath)) {
+        if (! $this->files->exists($configFilePath)) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException($configFilePath);
         }
     }

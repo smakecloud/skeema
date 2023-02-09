@@ -7,11 +7,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class TestCase extends \Orchestra\Testbench\TestCase
 {
     use RefreshDatabase;
+
     /**
      * Get package providers.
      *
      * @param  \Illuminate\Foundation\Application  $app
-     *
      * @return array<int, class-string<\Illuminate\Support\ServiceProvider>>
      */
     protected function getPackageProviders($app)
@@ -37,7 +37,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     protected function getSkeemaDir(): string
     {
-        return self::applicationBasePath() . '/' . config('skeema.dir');
+        return self::applicationBasePath().'/'.config('skeema.dir');
     }
 
     private function removeExistingSkeemaDir(): void
@@ -47,6 +47,11 @@ class TestCase extends \Orchestra\Testbench\TestCase
         if ($this->app->files->exists($skeemaDir)) {
             $this->app->files->deleteDirectory($skeemaDir);
         }
+    }
+
+    protected function overwriteSkeemaFile(string $file, string $content): void
+    {
+        $this->app->files->put($this->getSkeemaDir().'/'.$file, $content);
     }
 
     /**
@@ -63,7 +68,6 @@ class TestCase extends \Orchestra\Testbench\TestCase
      * Run test in 'prod' env
      *
      * @param  \Illuminate\Foundation\Application  $app
-     *
      * @return void
      */
     protected function runsInProduction($app)

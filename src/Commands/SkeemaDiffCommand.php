@@ -19,7 +19,7 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
     {
         $this->ensureSkeemaConfigFileExists();
 
-        return $this->getSkeemaCommand('diff ' . static::SKEEMA_ENV_NAME, [
+        return $this->getSkeemaCommand('diff '.static::SKEEMA_ENV_NAME, [
 
         ]);
     }
@@ -32,10 +32,9 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
         if ($process->getExitCode() >= 2) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithErrorsException();
         } else {
-            if(!$this->option('ignore-warnings')) {
+            if (! $this->option('ignore-warnings')) {
                 throw new \Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithWarningsException();
             }
         }
     }
-
 }

@@ -2,7 +2,6 @@
 
 namespace Tests\Commands;
 
-use Smakecloud\Skeema\Commands\SkeemaBaseCommand;
 use Tests\TestCase;
 
 class SkeemaInitCommandTest extends TestCase
@@ -16,11 +15,11 @@ class SkeemaInitCommandTest extends TestCase
 
     /**
      * @test
+     *
      * @define-env runsInProduction
      */
     public function it_asks_for_confirmation_in_production_environments()
     {
-
         $this->assertTrue($this->app->isProduction());
 
         $this->artisan('skeema:init')
@@ -37,6 +36,7 @@ class SkeemaInitCommandTest extends TestCase
 
     /**
      * @test
+     *
      * @define-env runsInProduction
      */
     public function it_doesnt_asks_for_confirmation_in_production_environments_with_force_flag()
@@ -53,10 +53,10 @@ class SkeemaInitCommandTest extends TestCase
         $this->artisan('skeema:init')
             ->assertSuccessful();
 
-        $this->assertFileExists($this->getSkeemaDir() . '/.skeema');
+        $this->assertFileExists($this->getSkeemaDir().'/.skeema');
         $this->assertFileEquals(
-            __DIR__ . '/../stubs/skeema-config',
-            $this->getSkeemaDir() . '/.skeema'
+            __DIR__.'/../stubs/skeema-config',
+            $this->getSkeemaDir().'/.skeema'
         );
     }
 
@@ -66,16 +66,16 @@ class SkeemaInitCommandTest extends TestCase
         $this->artisan('skeema:init')
             ->assertSuccessful();
 
-        $this->assertFileExists($this->getSkeemaDir() . '/migrations.sql');
-        $this->assertFileExists($this->getSkeemaDir() . '/test1.sql');
+        $this->assertFileExists($this->getSkeemaDir().'/migrations.sql');
+        $this->assertFileExists($this->getSkeemaDir().'/test1.sql');
 
         $this->assertFileEquals(
-            __DIR__ . '/../stubs/migrations-sql',
-            $this->getSkeemaDir() . '/migrations.sql'
+            __DIR__.'/../stubs/migrations-sql',
+            $this->getSkeemaDir().'/migrations.sql'
         );
         $this->assertFileEquals(
-            __DIR__ . '/../stubs/test1-sql',
-            $this->getSkeemaDir() . '/test1.sql'
+            __DIR__.'/../stubs/test1-sql',
+            $this->getSkeemaDir().'/test1.sql'
         );
     }
 }

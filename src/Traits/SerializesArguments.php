@@ -2,8 +2,8 @@
 
 namespace Smakecloud\Skeema\Traits;
 
-trait SerializesArguments {
-
+trait SerializesArguments
+{
     /**
      * Serialize the given arguments.
      *
@@ -30,9 +30,9 @@ trait SerializesArguments {
     public function serializeArgument($value, $key): string
     {
         return match (true) {
-            $value === false => "",
+            $value === false => '',
             $value === true => "--{$key}",
-            default => "--{$key}=" . escapeshellarg($value),
+            default => "--{$key}=".escapeshellarg($value),
         };
     }
 }

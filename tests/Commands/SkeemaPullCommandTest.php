@@ -2,7 +2,6 @@
 
 namespace Tests\Commands;
 
-use Smakecloud\Skeema\Commands\SkeemaBaseCommand;
 use Tests\TestCase;
 
 class SkeemaPullCommandTest extends TestCase

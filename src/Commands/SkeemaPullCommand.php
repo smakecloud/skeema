@@ -18,9 +18,8 @@ class SkeemaPullCommand extends SkeemaBaseCommand
     {
         $this->ensureSkeemaConfigFileExists();
 
-        return $this->getSkeemaCommand('pull ' . static::SKEEMA_ENV_NAME, [
+        return $this->getSkeemaCommand('pull '.static::SKEEMA_ENV_NAME, [
 
         ]);
     }
-
 }

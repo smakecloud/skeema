@@ -20,9 +20,14 @@ class SkeemaPushCommand extends SkeemaBaseCommand
         $this->confirmToProceed('Running skeema push in production.');
         $this->ensureSkeemaConfigFileExists();
 
-        return $this->getSkeemaCommand('push ' . static::SKEEMA_ENV_NAME, [
+        $args = [];
 
-        ]);
+        if ($this->getConfig('skeema.alter_wrapper.enabled', false)) {
+            $args['alter-wrapper'] = $this->getAlterWrapperCommand();
+            $args['alter-wrapper-min-size'] = $this->getConfig(('skeema.alter_wrapper.min_size'), '0');
+        }
+
+        return $this->getSkeemaCommand('push '.static::SKEEMA_ENV_NAME, $args);
     }
 
     /**
@@ -33,8 +38,9 @@ class SkeemaPushCommand extends SkeemaBaseCommand
         if ($process->getExitCode() >= 2) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaPushFatalErrorException();
         } else {
+            // @codeCoverageIgnoreStart
             throw new \Smakecloud\Skeema\Exceptions\SkeemaPushCouldNotUpdateTableException();
+            // @codeCoverageIgnoreEnd
         }
     }
-
 }

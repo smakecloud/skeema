@@ -2,6 +2,9 @@
 
 namespace Smakecloud\Skeema\Exceptions;
 
+/**
+ * @codeCoverageIgnore
+ */
 class SkeemaPushCouldNotUpdateTableException extends ExceptionWithExitCode
 {
     public function __construct()

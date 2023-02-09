@@ -2,8 +2,6 @@
 
 namespace Smakecloud\Skeema\Exceptions;
 
-use Exception;
-
 class SkeemaConfigNotFoundException extends ExceptionWithExitCode
 {
     public function __construct(string $configFilePath)

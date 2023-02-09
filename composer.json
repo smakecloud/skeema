@@ -13,6 +13,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
+        "laravel/pint": "^1.4",
         "orchestra/testbench": "^7.22",
         "phpunit/phpunit": "^7.2|^8.4|^9.5",
         "squizlabs/php_codesniffer": "^3.3"
@@ -30,7 +31,8 @@
     "scripts": {
         "test": "vendor/bin/phpunit",
         "test:coverage": "php -dpcov.enabled=1 -dpcov.directory=. -dpcov.exclude='~vendor~' vendor/bin/phpunit -d memory_limit=6144M --coverage-html coverage --verbose",
-        "lint": "vendor/bin/phpcs --standard=PSR2 --colors src/ tests/",
+        "lint": "vendor/bin/pint --test",
+        "lint:fix": "vendor/bin/pint",
         "post-autoload-dump": [
             "@php vendor/bin/testbench package:discover --ansi"
         ]
@@ -38,8 +40,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "kp alter",
-            "email": "x@y.ze"
+            "name": "Florian Over",
+            "email": "florian.over@smake.com"
         }
     ],
     "minimum-stability": "stable",
