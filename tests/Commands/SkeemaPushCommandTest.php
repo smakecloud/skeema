@@ -92,7 +92,7 @@ class SkeemaPushCommandTest extends TestCase
         ]);
 
         $this->artisan('skeema:push')
-            ->expectsOutputToContain("skeema push laravel --alter-wrapper='gh-ost --execute --alter {CLAUSES} --database={SCHEMA} --table={TABLE} --host={HOST} --user={USER} --password={PASSWORD} --max-load=Threads_running=25 --critical-load=Threads_running=1000' --alter-wrapper-min-size='0' ")
+            ->expectsOutputToContain("skeema push laravel --alter-wrapper='gh-ost --execute --alter {CLAUSES} --database={SCHEMA} --table={TABLE} --host={HOST} --user={USER} --password={PASSWORDX} --max-load=Threads_running=25 --critical-load=Threads_running=1000' --alter-wrapper-min-size='0' ")
             ->run();
     }
 }
