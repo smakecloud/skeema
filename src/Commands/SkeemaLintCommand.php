@@ -12,18 +12,18 @@ use Symfony\Component\Process\Process;
 class SkeemaLintCommand extends SkeemaBaseCommand
 {
     protected $signature = 'skeema:lint'
-        . ' {--skip-format : Skip formatting the schema files}'
-        . ' {--strip-definer= : Remove DEFINER clauses from *.sql files}'
-        . ' {--strip-partitioning : Remove PARTITION BY clauses from *.sql files}'
-        . ' {--allow-auto-inc= : List of allowed auto_increment column data types for lint-auto-inc}'
-        . ' {--allow-charset= :	List of allowed character sets for lint-charset}'
-        . ' {--allow-compression= : List of allowed compression settings for lint-compression}'
-        . ' {--allow-definer= : List of allowed routine definers for lint-definer}'
-        . ' {--allow-engine= : List of allowed storage engines for lint-engine}'
-        . ' {--update-views : Reformat views in canonical single-line form}'
-        . ' {--ignore-warnings : Exit with status 0 even if warnings are found}'
-        . ' {--output-format=default : Output format (default, github, or quiet)}'
-        . ' {--connection=}';
+        .' {--skip-format : Skip formatting the schema files}'
+        .' {--strip-definer= : Remove DEFINER clauses from *.sql files}'
+        .' {--strip-partitioning : Remove PARTITION BY clauses from *.sql files}'
+        .' {--allow-auto-inc= : List of allowed auto_increment column data types for lint-auto-inc}'
+        .' {--allow-charset= :	List of allowed character sets for lint-charset}'
+        .' {--allow-compression= : List of allowed compression settings for lint-compression}'
+        .' {--allow-definer= : List of allowed routine definers for lint-definer}'
+        .' {--allow-engine= : List of allowed storage engines for lint-engine}'
+        .' {--update-views : Reformat views in canonical single-line form}'
+        .' {--ignore-warnings : Exit with status 0 even if warnings are found}'
+        .' {--output-format=default : Output format (default, github, or quiet)}'
+        .' {--connection=}';
 
     protected $description = 'Lint the database schema ';
 
@@ -76,7 +76,7 @@ class SkeemaLintCommand extends SkeemaBaseCommand
 
         return [
             ...$this->lintRules(),
-            ...$args
+            ...$args,
         ];
     }
 
@@ -95,9 +95,9 @@ class SkeemaLintCommand extends SkeemaBaseCommand
 
     protected function onOutput($type, $buffer)
     {
-        if($this->option('output-format') === 'quiet') {
+        if ($this->option('output-format') === 'quiet') {
             return;
-        } elseif($this->option('output-format') === 'github') {
+        } elseif ($this->option('output-format') === 'github') {
             $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\]\w?(.*\.sql):(\d*):(.*)$/m';
 
             preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
@@ -107,7 +107,7 @@ class SkeemaLintCommand extends SkeemaBaseCommand
             }
 
             collect($matches)->each(function ($match) {
-                $level = match(strtolower(trim($match[2]))) {
+                $level = match (strtolower(trim($match[2]))) {
                     'error' => 'error',
                     'warn' => 'warning',
                     default => 'notice',

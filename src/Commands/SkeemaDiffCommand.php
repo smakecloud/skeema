@@ -12,23 +12,23 @@ use Symfony\Component\Process\Process;
 class SkeemaDiffCommand extends SkeemaBaseCommand
 {
     protected $signature = 'skeema:diff'
-        . ' {--ignore-warnings : No error will be thrown if there are warnings}'
-        . ' {--alter-algorithm= : The algorithm to use for ALTER TABLE statements}'
-        . ' {--alter-lock= : The lock to use for ALTER TABLE statements}'
-        . ' {--alter-validate-virtual : Apply a WITH VALIDATION clause to ALTER TABLEs affecting virtual columns}'
-        . ' {--compare-metadata : For stored programs, detect changes to creation-time sql_mode or DB collation}'
-        . ' {--exact-match : Follow *.sql table definitions exactly, even for differences with no functional impact}'
-        . ' {--partitioning= : Specify handling of partitioning status on the database side}'
-        . ' {--strip-definer= : Ignore DEFINER clauses when comparing procs, funcs, views, or triggers}'
-        . ' {--allow-auto-inc= : List of allowed auto_increment column data types for lint-auto-inc}'
-        . ' {--allow-charset= :	List of allowed character sets for lint-charset}'
-        . ' {--allow-compression= : List of allowed compression settings for lint-compression}'
-        . ' {--allow-definer= : List of allowed routine definers for lint-definer}'
-        . ' {--allow-engine= : List of allowed storage engines for lint-engine}'
-        . ' {--allow-unsafe : Permit generating ALTER or DROP operations that are potentially destructive}'
-        . ' {--safe-below-size= : Always permit generating destructive operations for tables below this size in bytes}'
-        . ' {--skip-verify : Skip Test all generated ALTER statements on temp schema to verify correctness}'
-        . ' {--connection=}';
+        .' {--ignore-warnings : No error will be thrown if there are warnings}'
+        .' {--alter-algorithm= : The algorithm to use for ALTER TABLE statements}'
+        .' {--alter-lock= : The lock to use for ALTER TABLE statements}'
+        .' {--alter-validate-virtual : Apply a WITH VALIDATION clause to ALTER TABLEs affecting virtual columns}'
+        .' {--compare-metadata : For stored programs, detect changes to creation-time sql_mode or DB collation}'
+        .' {--exact-match : Follow *.sql table definitions exactly, even for differences with no functional impact}'
+        .' {--partitioning= : Specify handling of partitioning status on the database side}'
+        .' {--strip-definer= : Ignore DEFINER clauses when comparing procs, funcs, views, or triggers}'
+        .' {--allow-auto-inc= : List of allowed auto_increment column data types for lint-auto-inc}'
+        .' {--allow-charset= :	List of allowed character sets for lint-charset}'
+        .' {--allow-compression= : List of allowed compression settings for lint-compression}'
+        .' {--allow-definer= : List of allowed routine definers for lint-definer}'
+        .' {--allow-engine= : List of allowed storage engines for lint-engine}'
+        .' {--allow-unsafe : Permit generating ALTER or DROP operations that are potentially destructive}'
+        .' {--safe-below-size= : Always permit generating destructive operations for tables below this size in bytes}'
+        .' {--skip-verify : Skip Test all generated ALTER statements on temp schema to verify correctness}'
+        .' {--connection=}';
 
     protected $description = 'Diff the database schema ';
 
@@ -125,7 +125,7 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
         $baseRules = $this->getConfig('skeema.lint.rules', []);
         $diffRules = $this->getConfig('skeema.lint.diff', []);
 
-        if ($diffRules === false || !is_array($diffRules) || !is_array($baseRules)) {
+        if ($diffRules === false || ! is_array($diffRules) || ! is_array($baseRules)) {
             $args['skip-lint'] = true;
 
             return $args;

@@ -12,26 +12,26 @@ use Symfony\Component\Process\Process;
 class SkeemaPushCommand extends SkeemaBaseCommand
 {
     protected $signature = 'skeema:push'
-        . ' {--alter-algorithm= : Apply an ALGORITHM clause to all ALTER TABLEs}'
-        . ' {--alter-lock= : Apply a LOCK clause to all ALTER TABLEs}'
-        . ' {--alter-validate-virtual : Apply a WITH VALIDATION clause to ALTER TABLEs affecting virtual columns}'
-        . ' {--compare-metadata : For stored programs, detect changes to creation-time sql_mode or DB collation}'
-        . ' {--exact-match : Follow *.sql table definitions exactly, even for differences with no functional impact}'
-        . ' {--partitioning= : Specify handling of partitioning status on the database side}'
-        . ' {--strip-definer= : Ignore DEFINER clauses when comparing procs, funcs, views, or triggers}'
-        . ' {--allow-auto-inc= : List of allowed auto_increment column data types for lint-auto-inc}'
-        . ' {--allow-charset= :	List of allowed character sets for lint-charset}'
-        . ' {--allow-compression= : List of allowed compression settings for lint-compression}'
-        . ' {--allow-definer= : List of allowed routine definers for lint-definer}'
-        . ' {--allow-engine= : List of allowed storage engines for lint-engine}'
-        . ' {--allow-unsafe : Permit generating ALTER or DROP operations that are potentially destructive}'
-        . ' {--safe-below-size= : Always permit generating destructive operations for tables below this size in bytes}'
-        . ' {--skip-verify : Skip Test all generated ALTER statements on temp schema to verify correctness}'
-        . ' {--skip-lint : Skip Check modified objects for problems before proceeding}'
-        . ' {--dry-run : Output DDL but don’t run it; equivalent to skeema diff}'
-        . ' {--foreign-key-checks : Force the server to check referential integrity of any new foreign key}'
-        . ' {--force}'
-        . ' {--connection=}';
+        .' {--alter-algorithm= : Apply an ALGORITHM clause to all ALTER TABLEs}'
+        .' {--alter-lock= : Apply a LOCK clause to all ALTER TABLEs}'
+        .' {--alter-validate-virtual : Apply a WITH VALIDATION clause to ALTER TABLEs affecting virtual columns}'
+        .' {--compare-metadata : For stored programs, detect changes to creation-time sql_mode or DB collation}'
+        .' {--exact-match : Follow *.sql table definitions exactly, even for differences with no functional impact}'
+        .' {--partitioning= : Specify handling of partitioning status on the database side}'
+        .' {--strip-definer= : Ignore DEFINER clauses when comparing procs, funcs, views, or triggers}'
+        .' {--allow-auto-inc= : List of allowed auto_increment column data types for lint-auto-inc}'
+        .' {--allow-charset= :	List of allowed character sets for lint-charset}'
+        .' {--allow-compression= : List of allowed compression settings for lint-compression}'
+        .' {--allow-definer= : List of allowed routine definers for lint-definer}'
+        .' {--allow-engine= : List of allowed storage engines for lint-engine}'
+        .' {--allow-unsafe : Permit generating ALTER or DROP operations that are potentially destructive}'
+        .' {--safe-below-size= : Always permit generating destructive operations for tables below this size in bytes}'
+        .' {--skip-verify : Skip Test all generated ALTER statements on temp schema to verify correctness}'
+        .' {--skip-lint : Skip Check modified objects for problems before proceeding}'
+        .' {--dry-run : Output DDL but don’t run it; equivalent to skeema diff}'
+        .' {--foreign-key-checks : Force the server to check referential integrity of any new foreign key}'
+        .' {--force}'
+        .' {--connection=}';
 
     protected $description = 'Push the database schema ';
 
@@ -123,7 +123,7 @@ class SkeemaPushCommand extends SkeemaBaseCommand
         $baseRules = $this->getConfig('skeema.lint.rules', []);
         $pushRules = $this->getConfig('skeema.lint.push', []);
 
-        if ($this->option('skip-lint') || $pushRules === false || !is_array($pushRules) || !is_array($baseRules)) {
+        if ($this->option('skip-lint') || $pushRules === false || ! is_array($pushRules) || ! is_array($baseRules)) {
             $args['skip-lint'] = true;
 
             return $args;
