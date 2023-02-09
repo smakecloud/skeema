@@ -189,6 +189,7 @@ Options:
       --strip-partitioning             Remove PARTITION BY clauses from *.sql files
       --update-views                   Reformat views in canonical single-line form
       --ignore-warnings                Exit with status 0 even if warnings are found
+      --output-format[=OUTPUT-FORMAT]  Output format for lint results. Valid values: default, github, quiet
       --connection[=CONNECTION]
   -h, --help                           Display help for the given command. When no command is given display help for the list command
   -q, --quiet                          Do not output any message
