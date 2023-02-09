@@ -17,6 +17,7 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         . ' {--strip-partitioning : Remove PARTITION BY clauses from *.sql files}'
         . ' {--update-views : Reformat views in canonical single-line form}'
         . ' {--ignore-warnings : Exit with status 0 even if warnings are found}'
+        . ' {--output-format=default : Output format (default, github, or quiet)}'
         . ' {--connection=}';
 
     protected $description = 'Lint the database schema ';
@@ -65,6 +66,37 @@ class SkeemaLintCommand extends SkeemaBaseCommand
 
                 return [$option => $value];
             })->toArray();
+    }
+
+    protected function onOutput($type, $buffer)
+    {
+        if($this->option('output-format') === 'quiet') {
+            return;
+        } elseif($this->option('output-format') === 'github') {
+            $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\]\w?(.*\.sql):(\d*):(.*)$/m';
+
+            preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
+
+            if (blank($matches)) {
+                return parent::onOutput($type, $buffer);
+            }
+
+            collect($matches)->each(function ($match) {
+                $level = match(strtolower(trim($match[2]))) {
+                    'error' => 'error',
+                    'warning' => 'warning',
+                    default => 'notice',
+                };
+
+                $file = trim($match[3]);
+                $line = trim($match[4]);
+                $message = trim($match[5]);
+
+                $this->info("::{$level} file={$file},line={$line}::{$message}");
+            });
+        } else {
+            return parent::onOutput($type, $buffer);
+        }
     }
 
     /**
