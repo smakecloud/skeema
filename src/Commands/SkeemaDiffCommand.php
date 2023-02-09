@@ -117,6 +117,11 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
             $args['safe-below-size'] = $this->option('safe-below-size');
         }
 
+        if ($this->getConfig('skeema.alter_wrapper.enabled', false)) {
+            $args['alter-wrapper'] = $this->getAlterWrapperCommand();
+            $args['alter-wrapper-min-size'] = $this->getConfig(('skeema.alter_wrapper.min_size'), '0');
+        }
+
         $baseRules = $this->getConfig('skeema.lint.rules', []);
         $diffRules = $this->getConfig('skeema.lint.diff', []);
 
