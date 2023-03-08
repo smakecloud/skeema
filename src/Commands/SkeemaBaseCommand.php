@@ -345,4 +345,9 @@ abstract class SkeemaBaseCommand extends Command
             throw new \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException($configFilePath);
         }
     }
+
+    public function getSignature()
+    {
+        return $this->signature;
+    }
 }

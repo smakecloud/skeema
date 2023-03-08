@@ -10,7 +10,44 @@ Skeema is a tool for managing MySQL database schemas.
 It allows you to define your database schema in simple SQL files,
 and then use Skeema to keep your database schema in sync.
 
+We also included a helper command to make it easier to transition from the default Laravel migrations to Skeema.
+See [Laravel Migrations to Skeema "converting"](#laravel-migrations-to-skeema-converting) for more information.
+
+If you want to run migrations from CI / CD pipelines checkout [Deployment Checking](#deployment-checking) for a way to check if the current laravel app includes any classic migrations or dumps that could break your deployment.
+
+## Table of Contents
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+    - [Dumping the schema](#dumping-the-schema)
+    - [Linting the schema](#linting-the-schema)
+    - [Diffing the schema](#diffing-the-schema)
+    - [Pushing the schema](#pushing-the-schema)
+    - [Pulling the schema](#pulling-the-schema)
+    - [Deployment Checking](#deployment-checking)
+    - [Laravel Migrations to Skeema "converting"](#laravel-migrations-to-skeema-converting)
+- [Testing](#testing)
+- [Disclaimer](#disclaimer)
+- [License](#license)
+- [Credits](#credits)
+
+## Requirements
+
+- PHP 8.1 or higher
+- [Laravel](https://laravel.com/) ( tested with laravel version 9 )
+- [Skeema](https://www.skeema.io/) ( tested with skeema version 1.9.0-community )
+
+**Optional**
+
+- [gh-ost](https://github.com/github/gh-ost) ( tested with gh-ost version 1.1.5 )
+- [percona-toolkit (pt-online-schema-change)](https://www.percona.com/software/database-tools/percona-toolkit) ( untested ! )
 ## Installation
+
+If you haven't already, install [Skeema](https://www.skeema.io/download/).
+
+We also recommend installing [gh-ost](https://github.com/github/gh-ost/releases). This is a tool that allows you to perform online schema changes without locking the table. ( Percona's pt-online-schema-change is also supported by Skeema but untested by us. )
 
 You can install the package via composer:
 
@@ -61,7 +98,11 @@ return [
         'min_size' => '0',
 
         /**
+         * This is how we do it at Smake.
+         * We highly recommend you to read documentation of
+         * gh-ost or pt-online-schema-change.
          * https://github.com/github/gh-ost/blob/master/doc/command-line-flags.md
+         * https://docs.percona.com/percona-toolkit/pt-online-schema-change.html
          */
         'params' => [
             '--max-load=Threads_running=25',
@@ -84,7 +125,7 @@ return [
 
     /**
      * Linter specific config
-     * lint, diff, push, Cloud Linter
+     * lint, diff, push
      */
     'lint' => [
         /**
@@ -144,6 +185,10 @@ return [
 ### Dumping the schema
 
 Run this once against your production database to generate the initial schema files.
+This will also create a `.skeema` configuratiob file in configured skeema base dir.
+
+
+We use env var interpolation to inject the database credentials from laravel into the config file.
 
 ```shell
 $ php artisan skeema:init
@@ -168,9 +213,27 @@ Options:
   -v|vv|vvv, --verbose           Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 
+---
+
+Example .skeema file:
+
+```ini
+generator=skeema:1.9.0-community
+
+[laravel]
+flavor=mysql:5.7
+host=$LARAVEL_SKEEMA_DB_HOST
+password=$LARAVEL_SKEEMA_DB_PASSWORD
+port=$LARAVEL_SKEEMA_DB_PORT
+schema=$LARAVEL_SKEEMA_DB_SCHEMA
+user=$LARAVEL_SKEEMA_DB_USER
+```
+
 ### Linting the schema
 
 Lint the schema files with your configured rules.
+
+Take a look at skeema [linting documentation](https://www.skeema.io/docs/commands/lint/) for more information.
 
 ```shell
 $ php artisan skeema:lint
@@ -208,6 +271,8 @@ Options:
 ### Diffing the schema
 
 Diff the schema files against the database.
+
+Take a look at skeema [diffing documentation](https://www.skeema.io/docs/commands/diff/) for more information.
 
 ```shell
 $ php artisan skeema:diff
@@ -250,6 +315,8 @@ Options:
 ### Pushing the schema
 
 Push the schema files to the database.
+
+Take a look at skeema [pushing documentation](https://www.skeema.io/docs/commands/push/) for more information.
 
 ```shell
 $ php artisan skeema:push
@@ -295,6 +362,8 @@ Options:
 
 Pull the schema files from the database.
 
+Take a look at skeema [pulling documentation](https://www.skeema.io/docs/commands/pull/) for more information.
+
 ```shell
 $ php artisan skeema:pull
 ```
@@ -324,6 +393,37 @@ Options:
   -v|vv|vvv, --verbose                 Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 
+### Deployment Checking
+
+**This should not be used in production environments, run it in a dedicated CI environment !**
+
+This custom command checks for existing laravel migrations,
+mysql-dump files, or running gh-ost migrations.
+
+This can be usefull for pre-deployment checks ( in CI/CD pipelines ).
+
+```shell
+$ php artisan skeema:check-deployment
+```
+
+### Laravel Migrations to Skeema "converting"
+
+**This should not be used in production environments, run it in development environments only !**
+
+This custom command "converts" existing laravel migrations to skeema schema files.
+This is achieved by executing the following steps:
+
+1. Force pushing the current skeema files to the database ( Skippable with `--no-push` )
+2. Looping through existing laravel migrations
+    - If the have been executed already, they will be deleted
+    - If they haven't been executed yet, they will be executed and then deleted
+3. Pulling the new skeema files from the database
+
+```shell
+$ php artisan skeema:convert-migrations
+```
+
+
 ## Testing
 
 ```shell
@@ -350,6 +450,8 @@ The MIT License (MIT). Please see [License File](LICENSE) for more information.
 
 ## Credits
 
-- [Skeema](https://www.skeema.io/)
-- [Daursu](https://github.com/Daursu)
+- [Daursu](https://github.com/Daursu) - for the initial idea
+- [Skeema](https://www.skeema.io/) - making all of this possible
+- [GitHub](https://github.com) - gh-ost, skeema
+- [Percona](https://www.percona.com/) - pt-online-schema-change
 - [Smake® IT GmbH](https://github.com/smakecloud)

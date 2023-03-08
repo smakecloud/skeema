@@ -96,7 +96,9 @@ class SkeemaLintCommand extends SkeemaBaseCommand
     protected function onOutput($type, $buffer)
     {
         if ($this->option('output-format') === 'quiet') {
+            // @codeCoverageIgnoreStart
             return;
+            // @codeCoverageIgnoreEnd
         } elseif ($this->option('output-format') === 'github') {
             $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\]\w?(.*\.sql):(\d*):(.*)$/m';
 
