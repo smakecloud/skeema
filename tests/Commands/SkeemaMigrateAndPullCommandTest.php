@@ -20,7 +20,7 @@ class SkeemaMigrateAndPullCommandTest extends TestCase
     {
         $testSkeemaFile = database_path('skeema/test2.sql');
 
-        if(File::exists($testSkeemaFile)) {
+        if (File::exists($testSkeemaFile)) {
             File::delete($testSkeemaFile);
         }
     }
@@ -28,6 +28,7 @@ class SkeemaMigrateAndPullCommandTest extends TestCase
     private function skeemaTestFileExists(): bool
     {
         $testSkeemaFile = database_path('skeema/test2.sql');
+
         return File::exists($testSkeemaFile);
     }
 
@@ -42,7 +43,7 @@ class SkeemaMigrateAndPullCommandTest extends TestCase
     {
         $testMigrationFile = database_path('migrations/2022_10_26_132948_create_test2_table.php');
 
-        if(File::exists($testMigrationFile)) {
+        if (File::exists($testMigrationFile)) {
             File::delete($testMigrationFile);
         }
     }
@@ -50,6 +51,7 @@ class SkeemaMigrateAndPullCommandTest extends TestCase
     private function migrationTestFileExists(): bool
     {
         $testMigrationFile = database_path('migrations/2022_10_26_132948_create_test2_table.php');
+
         return File::exists($testMigrationFile);
     }
 
@@ -170,5 +172,4 @@ class SkeemaMigrateAndPullCommandTest extends TestCase
 
         $this->deleteSkeemaTestFile();
     }
-
 }

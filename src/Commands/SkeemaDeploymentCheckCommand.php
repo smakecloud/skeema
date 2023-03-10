@@ -2,7 +2,6 @@
 
 namespace Smakecloud\Skeema\Commands;
 
-use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Smakecloud\Skeema\Exceptions\ExistingDumpFileException;
@@ -21,9 +20,9 @@ class SkeemaDeploymentCheckCommand extends Command
      * @var string
      */
     protected $signature = 'skeema:deployment-check'
-        . ' {--ignore-migrations : Ignore existing migrations}'
-        . ' {--ignore-dump-file : Ignore existing dump-file}'
-        . ' {--ignore-ghost-migrations : Ignore running ghost migrations}';
+        .' {--ignore-migrations : Ignore existing migrations}'
+        .' {--ignore-dump-file : Ignore existing dump-file}'
+        .' {--ignore-ghost-migrations : Ignore running ghost migrations}';
 
     /**
      * The console command description.
@@ -48,7 +47,7 @@ class SkeemaDeploymentCheckCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $exitCode = 0;
 
@@ -64,11 +63,10 @@ class SkeemaDeploymentCheckCommand extends Command
             if (! $this->option('ignore-ghost-migrations') && $this->hasRunningGhostMigrations()) {
                 throw new RunningGhostMigrationsException();
             }
-
         } catch (\Smakecloud\Skeema\Exceptions\ExceptionWithExitCode $e) {
-                $this->error('Skeema CI check failed! ' . $e->getMessage());
+            $this->error('Skeema CI check failed! '.$e->getMessage());
 
-                $exitCode = $e->getExitCode();
+            $exitCode = $e->getExitCode();
         }
 
         $this->info('Skeema CI check passed!');
@@ -99,7 +97,7 @@ class SkeemaDeploymentCheckCommand extends Command
     /**
      * Check if there are any classic migration files in the migration directory.
      */
-    private function hasMigrations()
+    private function hasMigrations(): bool
     {
         $files = collect($this->migrator->getMigrationFiles($this->getMigrationPath()));
 
@@ -109,7 +107,7 @@ class SkeemaDeploymentCheckCommand extends Command
     /**
      * Check if the classic database schema file exists.
      */
-    private function hasDatabaseSchema()
+    private function hasDatabaseSchema(): bool
     {
         return $this->filesystem->exists($this->getDatabaseSchemaPath());
     }
@@ -117,7 +115,7 @@ class SkeemaDeploymentCheckCommand extends Command
     /**
      * Check if any /tmp/gh-ost*
      */
-    private function hasRunningGhostMigrations()
+    private function hasRunningGhostMigrations(): bool
     {
         $files = $this->filesystem->glob('/tmp/gh-ost*');
 

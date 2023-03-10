@@ -84,26 +84,26 @@ class SkeemaDiffCommandTest extends TestCase
         ]);
         $this->app->get('config')->set('skeema.lint.diff', [
             \Smakecloud\Skeema\Lint\CharsetRule::class => 'override',
-            \Smakecloud\Skeema\Lint\DefinerRule::class => 'added'
+            \Smakecloud\Skeema\Lint\DefinerRule::class => 'added',
         ]);
 
         $args = $this->getSkeemaArgs(
             SkeemaDiffCommand::class,
             '--alter-algorithm="test1"'
-            . ' --alter-lock="test2"'
-            . ' --alter-validate-virtual'
-            . ' --compare-metadata'
-            . ' --exact-match'
-            . ' --allow-unsafe'
-            . ' --skip-verify'
-            . ' --partitioning="test3"'
-            . ' --strip-definer="test4"'
-            . ' --allow-auto-inc="test5"'
-            . ' --allow-charset="test6"'
-            . ' --allow-compression="test7"'
-            . ' --allow-definer="test8"'
-            . ' --allow-engine="test9"'
-            . ' --safe-below-size="test10"'
+            .' --alter-lock="test2"'
+            .' --alter-validate-virtual'
+            .' --compare-metadata'
+            .' --exact-match'
+            .' --allow-unsafe'
+            .' --skip-verify'
+            .' --partitioning="test3"'
+            .' --strip-definer="test4"'
+            .' --allow-auto-inc="test5"'
+            .' --allow-charset="test6"'
+            .' --allow-compression="test7"'
+            .' --allow-definer="test8"'
+            .' --allow-engine="test9"'
+            .' --safe-below-size="test10"'
         );
 
         $this->assertArrayHasKey('alter-algorithm', $args);
@@ -177,7 +177,7 @@ class SkeemaDiffCommandTest extends TestCase
         ]);
         $this->app->get('config')->set('skeema.lint.diff', false);
 
-        $args = $this->getSkeemaArgs(SkeemaDiffCommand::class,'');
+        $args = $this->getSkeemaArgs(SkeemaDiffCommand::class, '');
 
         $this->assertArrayHasKey('skip-lint', $args);
         $this->assertEquals(true, $args['skip-lint']);

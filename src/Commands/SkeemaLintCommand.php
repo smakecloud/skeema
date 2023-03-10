@@ -34,6 +34,11 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         return $this->getSkeemaCommand('lint '.static::SKEEMA_ENV_NAME, $this->makeArgs());
     }
 
+    /**
+     * Get the lint arguments.
+     *
+     * @return array<string, mixed>
+     */
     private function makeArgs(): array
     {
         $args = [];
@@ -82,11 +87,16 @@ class SkeemaLintCommand extends SkeemaBaseCommand
 
     /**
      * Get the lint rules.
+     *
+     * @return array<string, string>
      */
     private function lintRules()
     {
-        return collect($this->getConfig('skeema.lint.rules', []))
-            ->mapWithKeys(function ($value, $key) {
+        /** @var array<string, string> */
+        $rules = $this->getConfig('skeema.lint.rules', []);
+
+        return collect($rules)
+            ->mapWithKeys(function (string $value, string $key) {
                 $option = $this->laravel->make($key)->getOptionString();
 
                 return [$option => $value];
@@ -98,14 +108,16 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         if ($this->option('output-format') === 'quiet') {
             // @codeCoverageIgnoreStart
             return;
-            // @codeCoverageIgnoreEnd
+        // @codeCoverageIgnoreEnd
         } elseif ($this->option('output-format') === 'github') {
             $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\]\w?(.*\.sql):(\d*):(.*)$/m';
 
             preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
 
             if (blank($matches)) {
-                return parent::onOutput($type, $buffer);
+                parent::onOutput($type, $buffer);
+
+                return;
             }
 
             collect($matches)->each(function ($match) {
@@ -122,14 +134,16 @@ class SkeemaLintCommand extends SkeemaBaseCommand
                 $this->output->writeln("::{$level} file={$file},line={$line}::{$message}");
             });
         } else {
-            return parent::onOutput($type, $buffer);
+            parent::onOutput($type, $buffer);
+
+            return;
         }
     }
 
     /**
      * Reference: https://www.skeema.io/docs/commands/lint/
      */
-    protected function onError(Process $process)
+    protected function onError(Process $process): void
     {
         if ($process->getExitCode() >= 2) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException();

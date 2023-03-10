@@ -98,5 +98,4 @@ class SkeemaDeploymentCheckCommandTest extends TestCase
 
         File::delete('/tmp/gh-ost.test.table.sql');
     }
-
 }

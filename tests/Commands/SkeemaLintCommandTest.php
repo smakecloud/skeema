@@ -119,7 +119,7 @@ class SkeemaLintCommandTest extends TestCase
         ]);
 
         $this->artisan('skeema:lint --output-format=github')
-            ->expectsOutputToContain('::error file=' . $this->getSkeemaDir() . '/' . 'test1.sql' . ',line=')
+            ->expectsOutputToContain('::error file='.$this->getSkeemaDir().'/'.'test1.sql'.',line=')
             ->assertExitCode(
                 (new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException())->getExitCode()
             );
@@ -152,15 +152,15 @@ class SkeemaLintCommandTest extends TestCase
         $args = $this->getSkeemaArgs(
             SkeemaLintCommand::class,
             '--skip-format'
-            . ' --update-views'
-            . ' --strip-partitioning'
-            . ' --strip-definer="test4"'
-            . ' --allow-auto-inc="test5"'
-            . ' --allow-charset="test6"'
-            . ' --allow-compression="test7"'
-            . ' --allow-definer="test8"'
-            . ' --allow-engine="test9"'
-            . ' --output-format="default"'
+            .' --update-views'
+            .' --strip-partitioning'
+            .' --strip-definer="test4"'
+            .' --allow-auto-inc="test5"'
+            .' --allow-charset="test6"'
+            .' --allow-compression="test7"'
+            .' --allow-definer="test8"'
+            .' --allow-engine="test9"'
+            .' --output-format="default"'
         );
 
         $this->assertArrayHasKey('skip-format', $args);

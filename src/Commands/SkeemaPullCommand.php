@@ -29,6 +29,11 @@ class SkeemaPullCommand extends SkeemaBaseCommand
         return $this->getSkeemaCommand('pull '.static::SKEEMA_ENV_NAME, $this->makeArgs());
     }
 
+    /**
+     * Make the arguments for the skeema command.
+     *
+     * @return array<string, mixed>
+     */
     private function makeArgs(): array
     {
         $args = [];

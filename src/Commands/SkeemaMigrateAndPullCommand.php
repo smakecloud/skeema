@@ -18,8 +18,8 @@ class SkeemaMigrateAndPullCommand extends Command
      * @var string
      */
     protected $signature = 'skeema:migrate-and-pull'
-        . ' {--keep-migrations : Keep migrations after skeema pull}'
-        . ' {--no-push : Skip the initial pushing of skeema files to the database}';
+        .' {--keep-migrations : Keep migrations after skeema pull}'
+        .' {--no-push : Skip the initial pushing of skeema files to the database}';
 
     /**
      * The console command description.
@@ -44,12 +44,12 @@ class SkeemaMigrateAndPullCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $files = collect($this->migrator->getMigrationFiles($this->getMigrationPath()));
 
         if ($files->count() > 0) {
-            if(! $this->option('no-push')) {
+            if (! $this->option('no-push')) {
                 $status = $this->call('skeema:push', [
                     '--force' => true,
                     '--allow-unsafe' => true,
@@ -58,8 +58,8 @@ class SkeemaMigrateAndPullCommand extends Command
                 // @codeCoverageIgnoreStart
                 if ($status !== 0) {
                     throw new Exception(
-                        'skeema:push failed with exit code: ' . $status
-                        . ' Files: ' . implode(', ', $files->keys()->toArray())
+                        'skeema:push failed with exit code: '.$status
+                        .' Files: '.implode(', ', $files->keys()->toArray())
                     );
                 }
                 // @codeCoverageIgnoreEnd
@@ -79,7 +79,7 @@ class SkeemaMigrateAndPullCommand extends Command
 
                     $this->info("Ran migration: {$key} {$file}");
 
-                    if(! $this->option('keep-migrations')) {
+                    if (! $this->option('keep-migrations')) {
                         $this->warn("Deleting ran migration: {$key} {$file}");
 
                         $this->filesystem->delete($file);
@@ -95,9 +95,9 @@ class SkeemaMigrateAndPullCommand extends Command
             // @codeCoverageIgnoreEnd
 
             $this->info('Done!');
-
-            return 0;
         }
+
+        return 0;
     }
 
     /**
@@ -109,5 +109,4 @@ class SkeemaMigrateAndPullCommand extends Command
     {
         return database_path('migrations');
     }
-
 }

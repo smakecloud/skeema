@@ -4,10 +4,10 @@ namespace Smakecloud\Skeema;
 
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 use Smakecloud\Skeema\Commands\SkeemaDeploymentCheckCommand;
-use Smakecloud\Skeema\Commands\SkeemaMigrateAndPullCommand;
 use Smakecloud\Skeema\Commands\SkeemaDiffCommand;
 use Smakecloud\Skeema\Commands\SkeemaInitCommand;
 use Smakecloud\Skeema\Commands\SkeemaLintCommand;
+use Smakecloud\Skeema\Commands\SkeemaMigrateAndPullCommand;
 use Smakecloud\Skeema\Commands\SkeemaPullCommand;
 use Smakecloud\Skeema\Commands\SkeemaPushCommand;
 

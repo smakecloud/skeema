@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use ReflectionObject;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\StringInput;
+
 class TestCase extends \Orchestra\Testbench\TestCase
 {
     use RefreshDatabase;
@@ -41,15 +42,15 @@ class TestCase extends \Orchestra\Testbench\TestCase
     protected function createTest1TableMigrationFile()
     {
         file_put_contents(
-            $this->applicationBasePath() . '/database/migrations/2022_10_26_132948_create_test1_table.php',
+            $this->applicationBasePath().'/database/migrations/2022_10_26_132948_create_test1_table.php',
             $this->getStub('test1-php')
         );
     }
 
     protected function deleteTest1TableMigrationFile()
     {
-        if ($this->app->files->exists($this->applicationBasePath() . '/database/migrations/2022_10_26_132948_create_test1_table.php')) {
-            $this->app->files->delete($this->applicationBasePath() . '/database/migrations/2022_10_26_132948_create_test1_table.php');
+        if ($this->app->files->exists($this->applicationBasePath().'/database/migrations/2022_10_26_132948_create_test1_table.php')) {
+            $this->app->files->delete($this->applicationBasePath().'/database/migrations/2022_10_26_132948_create_test1_table.php');
         }
     }
 
@@ -105,8 +106,8 @@ class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function getSkeemaArgs($class, $stringInput): array
     {
-        if(substr($stringInput, 0, 1) != " ") {
-            $stringInput = " " . $stringInput;
+        if (substr($stringInput, 0, 1) != ' ') {
+            $stringInput = ' '.$stringInput;
         }
 
         $cmd = app($class);
@@ -130,12 +131,11 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
         $hasMakeArgs = $reflector->hasMethod('makeArgs');
 
-        $this->assertTrue($hasMakeArgs, 'makeArgs method not found on class ' . $class);
+        $this->assertTrue($hasMakeArgs, 'makeArgs method not found on class '.$class);
 
         $method = $reflector->getMethod('makeArgs');
         $method->setAccessible(true);
 
         return $method->invoke($cmd);
     }
-
 }
