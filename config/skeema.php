@@ -31,9 +31,10 @@ return [
         'bin' => env('SKEEMA_WRAPPER_BIN', 'gh-ost'),
 
         /**
-         * Any table smaller than this size (in bytes) will ignore the alter-wrapper option. This permits skipping the overhead of external OSC tools when altering small tables.
+         * Any table smaller than this size (in bytes) will ignore the alter-wrapper option.
+         * This permits skipping the overhead of external OSC tools when altering small tables.
          */
-        'min_size' => '0',
+        'min_size' => '1m',
 
         /**
          * https://github.com/github/gh-ost/blob/master/doc/command-line-flags.md

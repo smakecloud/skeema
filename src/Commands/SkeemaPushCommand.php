@@ -43,6 +43,11 @@ class SkeemaPushCommand extends SkeemaBaseCommand
         return $this->getSkeemaCommand('push '.static::SKEEMA_ENV_NAME, $this->makeArgs());
     }
 
+    /**
+     * Make the arguments for the skeema push command.
+     *
+     * @return array<string, mixed>
+     */
     private function makeArgs(): array
     {
         $args = [];
@@ -143,7 +148,7 @@ class SkeemaPushCommand extends SkeemaBaseCommand
     /**
      * Reference: https://www.skeema.io/docs/commands/lint/
      */
-    protected function onError(Process $process)
+    protected function onError(Process $process): void
     {
         if ($process->getExitCode() >= 2) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaPushFatalErrorException();

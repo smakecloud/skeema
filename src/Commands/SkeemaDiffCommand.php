@@ -42,7 +42,7 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
     /**
      * Reference: https://www.skeema.io/docs/commands/diff/
      */
-    protected function onError(Process $process)
+    protected function onError(Process $process): void
     {
         if ($process->getExitCode() >= 2) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithErrorsException();
@@ -53,6 +53,9 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
         }
     }
 
+    /**
+     * @return array<string, string|bool>
+     */
     private function makeArgs(): array
     {
         $args = [];

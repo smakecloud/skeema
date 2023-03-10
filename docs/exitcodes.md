@@ -8,3 +8,6 @@
 6. Skeema diff exited with errors
 7. Skeema push exited because at least one table could not be updated due to use of unsupported features, or if the dry-run option was used and differences were found
 8. Skeema push exited with fatal error.
+9. Deployment-Check found existing laravel migrations
+10. Deployment-Check found existing laravel sql dump file
+11. Deployment-Check found running gh-ost migrations

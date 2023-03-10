@@ -30,7 +30,7 @@ class SkeemaInitCommand extends SkeemaBaseCommand
         ], false);
     }
 
-    protected function onSuccess(Process $process)
+    protected function onSuccess(Process $process): void
     {
         $this->info('Skeema init successful');
 
@@ -40,7 +40,7 @@ class SkeemaInitCommand extends SkeemaBaseCommand
     /**
      * Patch config file with environment variables interpolated
      */
-    private function getSkeemaConfig()
+    private function getSkeemaConfig(): \Illuminate\Support\Stringable
     {
         return Str::of('generator=skeema:'.$this->getSkeemaVersion().PHP_EOL)
             ->append('['.static::SKEEMA_ENV_NAME.']'.PHP_EOL)
@@ -55,7 +55,7 @@ class SkeemaInitCommand extends SkeemaBaseCommand
     /**
      * Patch config file with environment variables interpolated
      */
-    private function patchSkeemaConfigFile()
+    private function patchSkeemaConfigFile(): void
     {
         $configFilePath = $this->getSkeemaDir().DIRECTORY_SEPARATOR.'.skeema';
 
@@ -63,7 +63,6 @@ class SkeemaInitCommand extends SkeemaBaseCommand
             // @codeCoverageIgnoreStart
             throw new \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException($configFilePath);
             // @codeCoverageIgnoreEnd
-            return;
         }
 
         $this->files->put($configFilePath, $this->getSkeemaConfig()->toString());
