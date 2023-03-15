@@ -4,6 +4,8 @@ namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
 use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
+use Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -40,7 +42,7 @@ class SkeemaInitCommand extends SkeemaBaseCommand
     /**
      * Patch config file with environment variables interpolated
      */
-    private function getSkeemaConfig(): \Illuminate\Support\Stringable
+    private function getSkeemaConfig(): Stringable
     {
         return Str::of('generator=skeema:'.$this->getSkeemaVersion().PHP_EOL)
             ->append('['.static::SKEEMA_ENV_NAME.']'.PHP_EOL)
@@ -54,6 +56,8 @@ class SkeemaInitCommand extends SkeemaBaseCommand
 
     /**
      * Patch config file with environment variables interpolated
+     *
+     * @throws \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException
      */
     private function patchSkeemaConfigFile(): void
     {
@@ -61,7 +65,7 @@ class SkeemaInitCommand extends SkeemaBaseCommand
 
         if (! $this->files->exists($configFilePath)) {
             // @codeCoverageIgnoreStart
-            throw new \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException($configFilePath);
+            throw new SkeemaConfigNotFoundException($configFilePath);
             // @codeCoverageIgnoreEnd
         }
 

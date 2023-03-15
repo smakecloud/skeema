@@ -43,12 +43,14 @@ class SkeemaMigrateAndPullCommand extends Command
 
     /**
      * Execute the console command.
+     *
+     * @throws \Exception
      */
     public function handle(): int
     {
         $files = collect($this->migrator->getMigrationFiles($this->getMigrationPath()));
 
-        if ($files->count() > 0) {
+        if ($files->isNotEmpty()) {
             if (! $this->option('no-push')) {
                 $status = $this->call('skeema:push', [
                     '--force' => true,
@@ -72,18 +74,20 @@ class SkeemaMigrateAndPullCommand extends Command
                     $this->warn("Deleting ran migration: {$key} {$file}");
 
                     $this->filesystem->delete($file);
-                } else {
-                    $this->filesystem->requireOnce($file);
 
-                    $this->migrator->runPending([$file]);
+                    return;
+                }
 
-                    $this->info("Ran migration: {$key} {$file}");
+                $this->filesystem->requireOnce($file);
 
-                    if (! $this->option('keep-migrations')) {
-                        $this->warn("Deleting ran migration: {$key} {$file}");
+                $this->migrator->runPending([$file]);
 
-                        $this->filesystem->delete($file);
-                    }
+                $this->info("Ran migration: {$key} {$file}");
+
+                if (! $this->option('keep-migrations')) {
+                    $this->warn("Deleting ran migration: {$key} {$file}");
+
+                    $this->filesystem->delete($file);
                 }
             });
 
@@ -102,10 +106,8 @@ class SkeemaMigrateAndPullCommand extends Command
 
     /**
      * Get the path to the migration directory.
-     *
-     * @return string
      */
-    protected function getMigrationPath()
+    protected function getMigrationPath(): string
     {
         return database_path('migrations');
     }

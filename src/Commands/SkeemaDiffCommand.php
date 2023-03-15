@@ -3,6 +3,8 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
+use Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithErrorsException;
+use Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithWarningsException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -41,15 +43,18 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
 
     /**
      * Reference: https://www.skeema.io/docs/commands/diff/
+     *
+     * @throws \Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithErrorsException
+     * @throws \Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithWarningsException
      */
     protected function onError(Process $process): void
     {
-        if ($process->getExitCode() >= 2) {
-            throw new \Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithErrorsException();
-        } else {
-            if (! $this->option('ignore-warnings')) {
-                throw new \Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithWarningsException();
-            }
+        if ($process->getExitCode() > 1) {
+            throw new SkeemaDiffExitedWithErrorsException();
+        }
+
+        if (! $this->option('ignore-warnings')) {
+            throw new SkeemaDiffExitedWithWarningsException();
         }
     }
 
@@ -60,65 +65,32 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
     {
         $args = [];
 
-        if ($this->option('alter-algorithm')) {
-            $args['alter-algorithm'] = $this->option('alter-algorithm');
-        }
+        collect([
+            'alter-validate-virtual',
+            'compare-metadata',
+            'exact-match',
+            'alow-unsafe',
+            'skip-verify',
+        ])->filter(fn (string $option) => $this->option($option))
+            ->each(function (string $option) use (&$args): void {
+                $args[$option] = true;
+            });
 
-        if ($this->option('alter-lock')) {
-            $args['alter-lock'] = $this->option('alter-lock');
-        }
-
-        if ($this->option('alter-validate-virtual')) {
-            $args['alter-validate-virtual'] = true;
-        }
-
-        if ($this->option('compare-metadata')) {
-            $args['compare-metadata'] = true;
-        }
-
-        if ($this->option('exact-match')) {
-            $args['exact-match'] = true;
-        }
-
-        if ($this->option('allow-unsafe')) {
-            $args['allow-unsafe'] = true;
-        }
-
-        if ($this->option('skip-verify')) {
-            $args['skip-verify'] = true;
-        }
-
-        if ($this->option('partitioning')) {
-            $args['partitioning'] = $this->option('partitioning');
-        }
-
-        if ($this->option('strip-definer')) {
-            $args['strip-definer'] = $this->option('strip-definer');
-        }
-
-        if ($this->option('allow-auto-inc')) {
-            $args['allow-auto-inc'] = $this->option('allow-auto-inc');
-        }
-
-        if ($this->option('allow-charset')) {
-            $args['allow-charset'] = $this->option('allow-charset');
-        }
-
-        if ($this->option('allow-compression')) {
-            $args['allow-compression'] = $this->option('allow-compression');
-        }
-
-        if ($this->option('allow-definer')) {
-            $args['allow-definer'] = $this->option('allow-definer');
-        }
-
-        if ($this->option('allow-engine')) {
-            $args['allow-engine'] = $this->option('allow-engine');
-        }
-
-        if ($this->option('safe-below-size')) {
-            $args['safe-below-size'] = $this->option('safe-below-size');
-        }
+        collect([
+            'alter-algorithm',
+            'alter-lock',
+            'partitioning',
+            'strip-definer',
+            'allow-auto-inc',
+            'allow-charset',
+            'allow-compression',
+            'allow-definer',
+            'allow-engine',
+            'safe-below-size',
+        ])->filter(fn (string $option) => $this->option($option))
+            ->each(function (string $option) use (&$args): void {
+                $args[$option] = $this->option($option);
+            });
 
         if ($this->getConfig('skeema.alter_wrapper.enabled', false)) {
             $args['alter-wrapper'] = $this->getAlterWrapperCommand();
@@ -128,19 +100,16 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
         $baseRules = $this->getConfig('skeema.lint.rules', []);
         $diffRules = $this->getConfig('skeema.lint.diff', []);
 
-        if ($diffRules === false || ! is_array($diffRules) || ! is_array($baseRules)) {
-            $args['skip-lint'] = true;
-
-            return $args;
-        }
-
-        collect(array_merge($baseRules, $diffRules))->each(function ($value, $key) use (&$args) {
-            $option = $this->laravel->make($key)->getOptionString();
-
-            if ($option) {
-                $args[$option] = $value;
-            }
-        });
+        match (true) {
+            $diffRules === false => $args['skip-lint'] = true,
+            ! is_array($diffRules) => $args['skip-lint'] = true,
+            ! is_array($baseRules) => $args['skip-lint'] = true,
+            default => collect(array_merge($baseRules, $diffRules))->each(function ($value, $key) use (&$args) {
+                if ($option = $this->laravel->make($key)->getOptionString()) {
+                    $args[$option] = $value;
+                }
+            })
+        };
 
         return $args;
     }

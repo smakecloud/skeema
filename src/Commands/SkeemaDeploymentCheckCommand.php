@@ -4,6 +4,7 @@ namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Smakecloud\Skeema\Exceptions\ExceptionWithExitCode;
 use Smakecloud\Skeema\Exceptions\ExistingDumpFileException;
 use Smakecloud\Skeema\Exceptions\ExistingMigrationsException;
 use Smakecloud\Skeema\Exceptions\RunningGhostMigrationsException;
@@ -40,6 +41,7 @@ class SkeemaDeploymentCheckCommand extends Command
     public function __construct(Filesystem $filesystem)
     {
         parent::__construct();
+
         $this->filesystem = $filesystem;
         $this->migrator = app('migrator');
     }
@@ -52,73 +54,114 @@ class SkeemaDeploymentCheckCommand extends Command
         $exitCode = 0;
 
         try {
-            if (! $this->option('ignore-migrations') && $this->hasMigrations()) {
-                throw new ExistingMigrationsException();
-            }
+            $this->ensureThatAnExistingMigrationWillBeIgnoredIfDesired();
+            $this->ensureThatAnExistingDumpFileWillBeIgnoredIfDesired();
+            $this->ensureThatRunningGhostMigrationsWillBeIgnoredIfDesired();
 
-            if (! $this->option('ignore-dump-file') && $this->hasDatabaseSchema()) {
-                throw new ExistingDumpFileException();
-            }
-
-            if (! $this->option('ignore-ghost-migrations') && $this->hasRunningGhostMigrations()) {
-                throw new RunningGhostMigrationsException();
-            }
-        } catch (\Smakecloud\Skeema\Exceptions\ExceptionWithExitCode $e) {
+            $this->info('Skeema CI check passed!');
+        } catch (ExceptionWithExitCode $e) {
             $this->error('Skeema CI check failed! '.$e->getMessage());
 
             $exitCode = $e->getExitCode();
         }
-
-        $this->info('Skeema CI check passed!');
 
         return $exitCode;
     }
 
     /**
      * Get the path to the migration directory.
-     *
-     * @return string
      */
-    protected function getMigrationPath()
+    protected function getMigrationPath(): string
     {
         return database_path('migrations');
     }
 
     /**
      * Get the path to the classic database schema file.
-     *
-     * @return string
      */
-    protected function getDatabaseSchemaPath()
+    protected function getDatabaseSchemaPath(): string
     {
         return database_path('schema/mysql-schema.dump');
     }
 
     /**
-     * Check if there are any classic migration files in the migration directory.
+     * @throws \Smakecloud\Skeema\Exceptions\ExistingMigrationsException
      */
-    private function hasMigrations(): bool
+    private function ensureThatAnExistingMigrationWillBeIgnoredIfDesired(): void
     {
-        $files = collect($this->migrator->getMigrationFiles($this->getMigrationPath()));
+        if ($this->option('ignore-migrations')) {
+            return;
+        }
 
-        return $files->count() > 0;
+        if ($this->hasNotClassicMigrations()) {
+            return;
+        }
+
+        throw new ExistingMigrationsException();
+    }
+
+    /**
+     * @throws \Smakecloud\Skeema\Exceptions\ExistingDumpFileException
+     */
+    private function ensureThatAnExistingDumpFileWillBeIgnoredIfDesired(): void
+    {
+        if ($this->option('ignore-dump-file')) {
+            return;
+        }
+
+        if ($this->hasNotClassicDatabaseSchema()) {
+            return;
+        }
+
+        throw new ExistingDumpFileException();
+    }
+
+    /**
+     * @throws \Smakecloud\Skeema\Exceptions\RunningGhostMigrationsException
+     */
+    private function ensureThatRunningGhostMigrationsWillBeIgnoredIfDesired(): void
+    {
+        if ($this->option('ignore-ghost-migrations')) {
+            return;
+        }
+
+        if ($this->hasNotRunningGhostMigrations()) {
+            return;
+        }
+
+        throw new RunningGhostMigrationsException();
+    }
+
+    /**
+     * Check if there are no classic migration files in the migration directory.
+     */
+    private function hasNotClassicMigrations(): bool
+    {
+        return collect($this->migrator->getMigrationFiles($this->getMigrationPath()))
+            ->isEmpty();
     }
 
     /**
      * Check if the classic database schema file exists.
      */
-    private function hasDatabaseSchema(): bool
+    private function hasClassicDatabaseSchema(): bool
     {
         return $this->filesystem->exists($this->getDatabaseSchemaPath());
     }
 
     /**
-     * Check if any /tmp/gh-ost*
+     * Check if the classic database schema file does not exist.
      */
-    private function hasRunningGhostMigrations(): bool
+    private function hasNotClassicDatabaseSchema(): bool
     {
-        $files = $this->filesystem->glob('/tmp/gh-ost*');
+        return ! $this->hasClassicDatabaseSchema();
+    }
 
-        return count($files) > 0;
+    /**
+     * Check if there are no running ghost migrations.
+     */
+    private function hasNotRunningGhostMigrations(): bool
+    {
+        return collect($this->filesystem->glob('/tmp/gh-ost*'))->isEmpty();
     }
 }

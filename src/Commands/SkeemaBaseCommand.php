@@ -2,10 +2,12 @@
 
 namespace Smakecloud\Skeema\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
+use Smakecloud\Skeema\Exceptions\ExceptionWithExitCode;
 use Smakecloud\Skeema\Traits\SerializesArguments;
 use Symfony\Component\Process\Process;
 
@@ -69,13 +71,13 @@ abstract class SkeemaBaseCommand extends Command
             $this->info('Running: '.$command);
 
             $this->runProcess($command);
-        } catch (\Smakecloud\Skeema\Exceptions\ExceptionWithExitCode $e) {
+        } catch (ExceptionWithExitCode $e) {
             $this->error($e->getMessage());
 
             $exitCode = $e->getExitCode();
         }
         // @codeCoverageIgnoreStart
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->error($e->getMessage());
 
             $exitCode = -1;
@@ -87,10 +89,8 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Get the path to the skeema configuration file.
-     *
-     * @return string
      */
-    protected function getSkeemaDir()
+    protected function getSkeemaDir(): string
     {
         return $this->laravel->basePath(
             $this->getConfig('skeema.dir', 'database'.DIRECTORY_SEPARATOR.'skeema')
@@ -119,8 +119,6 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Get the connection instance.
-     *
-     * @return \Illuminate\Database\Connection
      */
     protected function getConnection(): Connection
     {
@@ -131,8 +129,6 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Get the Skeema version.
-     *
-     * @return string
      */
     protected function getSkeemaVersion(): string
     {
@@ -153,10 +149,8 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Ensure the skeema directory exists.
-     *
-     * @return void
      */
-    protected function ensureSkeemaDirExists()
+    protected function ensureSkeemaDirExists(): void
     {
         if (! $this->files->exists($this->getSkeemaDir())) {
             $this->files->makeDirectory($this->getSkeemaDir(), 0755, true);
@@ -165,11 +159,8 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Run the process.
-     *
-     * @param  string  $command
-     * @return void
      */
-    protected function runProcess($command)
+    protected function runProcess(string $command): void
     {
         $process = call_user_func(
             $this->processFactory,
@@ -207,12 +198,8 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Handle the process output.
-     *
-     * @param  int  $type
-     * @param  string  $buffer
-     * @return void
      */
-    protected function onOutput($type, $buffer)
+    protected function onOutput(int $type, string $buffer): void
     {
         $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\] (.*)$/m';
         preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
@@ -253,8 +240,6 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Get the alter wrapper command.
-     *
-     * @return string
      */
     protected function getAlterWrapperCommand(): string
     {

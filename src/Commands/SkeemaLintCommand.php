@@ -3,6 +3,8 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
+use Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException;
+use Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithWarningsException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -43,41 +45,26 @@ class SkeemaLintCommand extends SkeemaBaseCommand
     {
         $args = [];
 
-        if ($this->option('skip-format')) {
-            $args['skip-format'] = true;
-        }
+        collect([
+            'skip-format',
+            'strip-partitioning',
+            'update-views',
+        ])->filter(fn (string $option) => $this->option($option))
+            ->each(function (string $option) use (&$args): void {
+                $args[$option] = true;
+            });
 
-        if ($this->option('strip-definer')) {
-            $args['strip-definer'] = $this->option('strip-definer');
-        }
-
-        if ($this->option('strip-partitioning')) {
-            $args['strip-partitioning'] = true;
-        }
-
-        if ($this->option('update-views')) {
-            $args['update-views'] = true;
-        }
-
-        if ($this->option('allow-auto-inc')) {
-            $args['allow-auto-inc'] = $this->option('allow-auto-inc');
-        }
-
-        if ($this->option('allow-charset')) {
-            $args['allow-charset'] = $this->option('allow-charset');
-        }
-
-        if ($this->option('allow-compression')) {
-            $args['allow-compression'] = $this->option('allow-compression');
-        }
-
-        if ($this->option('allow-definer')) {
-            $args['allow-definer'] = $this->option('allow-definer');
-        }
-
-        if ($this->option('allow-engine')) {
-            $args['allow-engine'] = $this->option('allow-engine');
-        }
+        collect([
+            'strip-definer',
+            'allow-auto-inc',
+            'allow-charset',
+            'allow-compression',
+            'allow-definer',
+            'allow-engine',
+        ])->filter(fn (string $option) => $this->option($option))
+            ->each(function (string $option) use (&$args): void {
+                $args[$option] = $this->option($option);
+            });
 
         return [
             ...$this->lintRules(),
@@ -103,13 +90,15 @@ class SkeemaLintCommand extends SkeemaBaseCommand
             })->toArray();
     }
 
-    protected function onOutput($type, $buffer)
+    protected function onOutput($type, $buffer): void
     {
         if ($this->option('output-format') === 'quiet') {
             // @codeCoverageIgnoreStart
             return;
-        // @codeCoverageIgnoreEnd
-        } elseif ($this->option('output-format') === 'github') {
+            // @codeCoverageIgnoreEnd
+        }
+
+        if ($this->option('output-format') === 'github') {
             $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\]\w?(.*\.sql):(\d*):(.*)$/m';
 
             preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
@@ -133,24 +122,27 @@ class SkeemaLintCommand extends SkeemaBaseCommand
 
                 $this->output->writeln("::{$level} file={$file},line={$line}::{$message}");
             });
-        } else {
-            parent::onOutput($type, $buffer);
 
             return;
         }
+
+        parent::onOutput($type, $buffer);
     }
 
     /**
      * Reference: https://www.skeema.io/docs/commands/lint/
+     *
+     * @throws \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException
+     * @throws \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithWarningsException
      */
     protected function onError(Process $process): void
     {
-        if ($process->getExitCode() >= 2) {
-            throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException();
-        } else {
-            if (! $this->option('ignore-warnings')) {
-                throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithWarningsException();
-            }
+        if ($process->getExitCode() > 1) {
+            throw new SkeemaLinterExitedWithErrorsException();
+        }
+
+        if (! $this->option('ignore-warnings')) {
+            throw new SkeemaLinterExitedWithWarningsException();
         }
     }
 }

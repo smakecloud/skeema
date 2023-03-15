@@ -38,32 +38,20 @@ class SkeemaPullCommand extends SkeemaBaseCommand
     {
         $args = [];
 
-        if ($this->option('skip-format')) {
-            $args['skip-format'] = true;
-        }
-
-        if ($this->option('include-auto-inc')) {
-            $args['include-auto-inc'] = true;
-        }
-
-        if ($this->option('new-schemas')) {
-            $args['new-schemas'] = true;
-        }
+        collect([
+            'skip-format',
+            'include-auto-inc',
+            'new-schemas',
+            'strip-partitioning',
+            'update-views',
+            'update-partitioning',
+        ])->filter(fn (string $option) => $this->option($option))
+            ->each(function (string $option) use (&$args): void {
+                $args[$option] = true;
+            });
 
         if ($this->option('strip-definer')) {
             $args['strip-definer'] = $this->option('strip-definer');
-        }
-
-        if ($this->option('strip-partitioning')) {
-            $args['strip-partitioning'] = true;
-        }
-
-        if ($this->option('update-views')) {
-            $args['update-views'] = true;
-        }
-
-        if ($this->option('update-partitioning')) {
-            $args['update-partitioning'] = true;
         }
 
         return $args;
