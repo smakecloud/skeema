@@ -66,8 +66,6 @@ abstract class SkeemaBaseCommand extends Command
         try {
             $command = $this->getCommand($this->getConnection());
 
-            $this->info('Running: '.$command);
-
             $this->runProcess($command);
         } catch (\Smakecloud\Skeema\Exceptions\ExceptionWithExitCode $e) {
             $this->error($e->getMessage());

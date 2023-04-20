@@ -48,4 +48,5 @@ class ServiceProvider extends IlluminateServiceProvider
 
         $this->commands($commands->keys()->toArray());
     }
+
 }

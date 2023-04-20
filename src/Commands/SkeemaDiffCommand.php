@@ -3,6 +3,7 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\ParallelTesting;
 use Symfony\Component\Process\Process;
 
 /**
@@ -28,6 +29,9 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
         .' {--allow-unsafe : Permit generating ALTER or DROP operations that are potentially destructive}'
         .' {--safe-below-size= : Always permit generating destructive operations for tables below this size in bytes}'
         .' {--skip-verify : Skip Test all generated ALTER statements on temp schema to verify correctness}'
+        .' {--temp-schema= : This option specifies the name of the temporary schema to use for Skeema workspace operations.}'
+        .' {--temp-schema-threads= : This option controls the concurrency level for CREATE queries when populating the workspace, as well as DROP queries when cleaning up the workspace.}'
+        .' {--temp-schema-binlog= : This option controls whether or not workspace operations are written to the database’s binary log, which means they will be executed on replicas if replication is configured.}'
         .' {--connection=}';
 
     protected $description = 'Diff the database schema ';
@@ -54,11 +58,39 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
     }
 
     /**
+     * Get the temp schema name.
+     */
+    private function getTempSchemaName(): string
+    {
+        $parallelTestingToken = ParallelTesting::token();
+
+        if ($parallelTestingToken) {
+            return '_skeema_temp_'.$parallelTestingToken;
+        }
+
+        return '_skeema_temp';
+    }
+
+    /**
      * @return array<string, string|bool>
      */
     private function makeArgs(): array
     {
         $args = [];
+
+        if ($this->option('temp-schema')) {
+            $args['temp-schema'] = $this->option('temp-schema');
+        } else {
+            $args['temp-schema'] = $this->getTempSchemaName();
+        }
+
+        if ($this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads'))) {
+            $args['temp-schema-threads'] = $this->option('temp-schema-threads');
+        }
+
+        if ($this->option('temp-schema-binlog')) {
+            $args['temp-schema-binlog'] = $this->option('temp-schema-binlog');
+        }
 
         if ($this->option('alter-algorithm')) {
             $args['alter-algorithm'] = $this->option('alter-algorithm');

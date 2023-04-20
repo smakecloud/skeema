@@ -3,6 +3,7 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\ParallelTesting;
 
 /**
  * Class SkeemaPullCommand
@@ -18,6 +19,9 @@ class SkeemaPullCommand extends SkeemaBaseCommand
         .' {--strip-partitioning : Omit PARTITION BY clause when writing partitioned tables to filesystem}'
         .' {--update-views : Update definitions of existing views, using canonical form}'
         .' {--update-partitioning : Update PARTITION BY clauses in existing table files}'
+        .' {--temp-schema= : This option specifies the name of the temporary schema to use for Skeema workspace operations.}'
+        .' {--temp-schema-threads= : This option controls the concurrency level for CREATE queries when populating the workspace, as well as DROP queries when cleaning up the workspace.}'
+        .' {--temp-schema-binlog= : This option controls whether or not workspace operations are written to the database’s binary log, which means they will be executed on replicas if replication is configured.}'
         .' {--connection=}';
 
     protected $description = 'Pull the database schema ';
@@ -30,6 +34,20 @@ class SkeemaPullCommand extends SkeemaBaseCommand
     }
 
     /**
+     * Get the temp schema name.
+     */
+    private function getTempSchemaName(): string
+    {
+        $parallelTestingToken = ParallelTesting::token();
+
+        if ($parallelTestingToken) {
+            return '_skeema_temp_'.$parallelTestingToken;
+        }
+
+        return '_skeema_temp';
+    }
+
+    /**
      * Make the arguments for the skeema command.
      *
      * @return array<string, mixed>
@@ -37,6 +55,20 @@ class SkeemaPullCommand extends SkeemaBaseCommand
     private function makeArgs(): array
     {
         $args = [];
+
+        if ($this->option('temp-schema')) {
+            $args['temp-schema'] = $this->option('temp-schema');
+        } else {
+            $args['temp-schema'] = $this->getTempSchemaName();
+        }
+
+        if ($this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads'))) {
+            $args['temp-schema-threads'] = $this->option('temp-schema-threads');
+        }
+
+        if ($this->option('temp-schema-binlog')) {
+            $args['temp-schema-binlog'] = $this->option('temp-schema-binlog');
+        }
 
         if ($this->option('skip-format')) {
             $args['skip-format'] = true;
