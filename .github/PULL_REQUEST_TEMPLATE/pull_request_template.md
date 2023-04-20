@@ -20,7 +20,8 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 - [ ] Test A
 - [ ] Test B
 
-**Test Configuration**:
-* Database and Version:
-* Alter-Wrapper?:
-* OS:
+**Test Configuration:**
+
+- Database and Version:
+- Alter-Wrapper?:
+- OS:
