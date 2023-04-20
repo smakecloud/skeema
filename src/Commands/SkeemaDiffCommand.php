@@ -5,6 +5,7 @@ namespace Smakecloud\Skeema\Commands;
 use Illuminate\Database\Connection;
 use Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithErrorsException;
 use Smakecloud\Skeema\Exceptions\SkeemaDiffExitedWithWarningsException;
+use Illuminate\Support\Facades\ParallelTesting;
 use Symfony\Component\Process\Process;
 
 /**
@@ -30,6 +31,9 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
         .' {--allow-unsafe : Permit generating ALTER or DROP operations that are potentially destructive}'
         .' {--safe-below-size= : Always permit generating destructive operations for tables below this size in bytes}'
         .' {--skip-verify : Skip Test all generated ALTER statements on temp schema to verify correctness}'
+        .' {--temp-schema= : This option specifies the name of the temporary schema to use for Skeema workspace operations.}'
+        .' {--temp-schema-threads= : This option controls the concurrency level for CREATE queries when populating the workspace, as well as DROP queries when cleaning up the workspace.}'
+        .' {--temp-schema-binlog= : This option controls whether or not workspace operations are written to the database’s binary log, which means they will be executed on replicas if replication is configured.}'
         .' {--connection=}';
 
     protected $description = 'Diff the database schema ';
@@ -59,57 +63,62 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
     }
 
     /**
+     * Get the temp schema name.
+     */
+    private function getTempSchemaName(): string
+    {
+        $parallelTestingToken = ParallelTesting::token();
+
+        if ($parallelTestingToken) {
+            return '_skeema_temp_'.$parallelTestingToken;
+        }
+
+        return '_skeema_temp';
+    }
+
+    /**
      * @return array<string, string|bool>
      */
     private function makeArgs(): array
     {
-        $args = [];
+        $options = [
+            'temp-schema', 'temp-schema-threads', 'temp-schema-binlog', 'alter-algorithm',
+            'alter-lock', 'alter-validate-virtual', 'compare-metadata', 'exact-match',
+            'allow-unsafe', 'skip-verify', 'partitioning', 'strip-definer',
+            'allow-auto-inc', 'allow-charset', 'allow-compression', 'allow-definer',
+            'allow-engine', 'safe-below-size'
+        ];
 
-        collect([
-            'alter-validate-virtual',
-            'compare-metadata',
-            'exact-match',
-            'alow-unsafe',
-            'skip-verify',
-        ])->filter(fn (string $option) => $this->option($option))
-            ->each(function (string $option) use (&$args): void {
-                $args[$option] = true;
-            });
+        $args = collect($options)->mapWithKeys(function ($option) {
+            $value = $this->option($option);
+            if ($value && ($option !== 'temp-schema-threads' || is_numeric($value))) {
+                return [$option => $value];
+            }
+            return [];
+        })->toArray();
 
-        collect([
-            'alter-algorithm',
-            'alter-lock',
-            'partitioning',
-            'strip-definer',
-            'allow-auto-inc',
-            'allow-charset',
-            'allow-compression',
-            'allow-definer',
-            'allow-engine',
-            'safe-below-size',
-        ])->filter(fn (string $option) => $this->option($option))
-            ->each(function (string $option) use (&$args): void {
-                $args[$option] = $this->option($option);
-            });
+        $args['temp-schema'] = $args['temp-schema'] ?? $this->getTempSchemaName();
 
         if ($this->getConfig('skeema.alter_wrapper.enabled', false)) {
             $args['alter-wrapper'] = $this->getAlterWrapperCommand();
-            $args['alter-wrapper-min-size'] = $this->getConfig(('skeema.alter_wrapper.min_size'), '0');
+            $args['alter-wrapper-min-size'] = $this->getConfig('skeema.alter_wrapper.min_size', '0');
         }
 
         $baseRules = $this->getConfig('skeema.lint.rules', []);
         $diffRules = $this->getConfig('skeema.lint.diff', []);
 
-        match (true) {
-            $diffRules === false => $args['skip-lint'] = true,
-            ! is_array($diffRules) => $args['skip-lint'] = true,
-            ! is_array($baseRules) => $args['skip-lint'] = true,
-            default => collect(array_merge($baseRules, $diffRules))->each(function ($value, $key) use (&$args) {
-                if ($option = $this->laravel->make($key)->getOptionString()) {
-                    $args[$option] = $value;
-                }
-            })
-        };
+        if ($diffRules === false || !is_array($diffRules) || !is_array($baseRules)) {
+            $args['skip-lint'] = true;
+            return $args;
+        }
+
+        collect(array_merge($baseRules, $diffRules))->each(function ($value, $key) use (&$args) {
+            $option = $this->laravel->make($key)->getOptionString();
+
+            if ($option) {
+                $args[$option] = $value;
+            }
+        });
 
         return $args;
     }

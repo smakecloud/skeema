@@ -68,8 +68,6 @@ abstract class SkeemaBaseCommand extends Command
         try {
             $command = $this->getCommand($this->getConnection());
 
-            $this->info('Running: '.$command);
-
             $this->runProcess($command);
         } catch (ExceptionWithExitCode $e) {
             $this->error($e->getMessage());

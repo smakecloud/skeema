@@ -5,6 +5,7 @@ namespace Smakecloud\Skeema\Commands;
 use Illuminate\Database\Connection;
 use Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException;
 use Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithWarningsException;
+use Illuminate\Support\Facades\ParallelTesting;
 use Symfony\Component\Process\Process;
 
 /**
@@ -25,6 +26,9 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         .' {--update-views : Reformat views in canonical single-line form}'
         .' {--ignore-warnings : Exit with status 0 even if warnings are found}'
         .' {--output-format=default : Output format (default, github, or quiet)}'
+        .' {--temp-schema= : This option specifies the name of the temporary schema to use for Skeema workspace operations.}'
+        .' {--temp-schema-threads= : This option controls the concurrency level for CREATE queries when populating the workspace, as well as DROP queries when cleaning up the workspace.}'
+        .' {--temp-schema-binlog= : This option controls whether or not workspace operations are written to the database’s binary log, which means they will be executed on replicas if replication is configured.}'
         .' {--connection=}';
 
     protected $description = 'Lint the database schema ';
@@ -37,34 +41,43 @@ class SkeemaLintCommand extends SkeemaBaseCommand
     }
 
     /**
+     * Get the temp schema name.
+     */
+    private function getTempSchemaName(): string
+    {
+        $parallelTestingToken = ParallelTesting::token();
+
+        if ($parallelTestingToken) {
+            return '_skeema_temp_'.$parallelTestingToken;
+        }
+
+        return '_skeema_temp';
+    }
+
+    /**
      * Get the lint arguments.
      *
      * @return array<string, mixed>
      */
     private function makeArgs(): array
     {
-        $args = [];
+        $options = [
+            'temp-schema', 'temp-schema-threads', 'temp-schema-binlog', 'skip-format',
+            'strip-definer', 'strip-partitioning', 'update-views', 'allow-auto-inc',
+            'allow-charset', 'allow-compression', 'allow-definer', 'allow-engine'
+        ];
 
-        collect([
-            'skip-format',
-            'strip-partitioning',
-            'update-views',
-        ])->filter(fn (string $option) => $this->option($option))
-            ->each(function (string $option) use (&$args): void {
-                $args[$option] = true;
-            });
+        $args = collect($options)->mapWithKeys(function ($option) {
+            $value = $this->option($option);
+            if ($value && ($option !== 'temp-schema-threads' || is_numeric($value))) {
+                return [$option => $value];
+            }
+            return [];
+        })->toArray();
 
-        collect([
-            'strip-definer',
-            'allow-auto-inc',
-            'allow-charset',
-            'allow-compression',
-            'allow-definer',
-            'allow-engine',
-        ])->filter(fn (string $option) => $this->option($option))
-            ->each(function (string $option) use (&$args): void {
-                $args[$option] = $this->option($option);
-            });
+        $args['temp-schema'] = $args['temp-schema'] ?? $this->getTempSchemaName();
+        $args['strip-partitioning'] = $args['strip-partitioning'] ?? false;
+        $args['update-views'] = $args['update-views'] ?? false;
 
         return [
             ...$this->lintRules(),
