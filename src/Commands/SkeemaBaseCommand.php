@@ -197,7 +197,7 @@ abstract class SkeemaBaseCommand extends Command
     /**
      * Handle the process output.
      */
-    protected function onOutput(int $type, string $buffer): void
+    protected function onOutput(mixed $type, string $buffer): void
     {
         $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\] (.*)$/m';
         preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
