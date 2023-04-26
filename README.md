@@ -267,6 +267,8 @@ Take a look at skeema [diffing documentation](https://www.skeema.io/docs/command
 $ php artisan skeema:diff
 ```
 
+<details>
+
 ```
 Description:
   Diff the database schema
@@ -301,6 +303,8 @@ Options:
   -v|vv|vvv, --verbose                         Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 
+</details>
+
 ### Pushing the schema
 
 Push the schema files to the database.
@@ -310,6 +314,8 @@ Take a look at skeema [pushing documentation](https://www.skeema.io/docs/command
 ```shell
 $ php artisan skeema:push
 ```
+
+<details>
 
 ```
 Description:
@@ -346,6 +352,7 @@ Options:
       --env[=ENV]                              The environment the command should run under
   -v|vv|vvv, --verbose                         Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
+</details>
 
 ### Pulling the schema
 
@@ -356,6 +363,8 @@ Take a look at skeema [pulling documentation](https://www.skeema.io/docs/command
 ```shell
 $ php artisan skeema:pull
 ```
+
+<details>
 
 ```
 Description:
@@ -381,6 +390,8 @@ Options:
       --env[=ENV]                      The environment the command should run under
   -v|vv|vvv, --verbose                 Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
+
+</details>
 
 ### Deployment Checking
 
