@@ -7,7 +7,7 @@ trait SerializesArguments
     /**
      * Serialize the given arguments.
      *
-     * @param  array  $args
+     * @param  array<string, mixed>  $args
      * @return string
      */
     public function serializeArgs(array $args): string

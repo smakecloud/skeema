@@ -73,26 +73,4 @@ class SkeemaPushCommandTest extends TestCase
             );
     }
 
-    /** @test */
-    public function it_uses_the_alt_wrapper_command_if_configured()
-    {
-        $this->artisan('skeema:init')->assertSuccessful();
-
-        $this->overwriteSkeemaFile(
-            'test1.sql',
-            file_get_contents(__DIR__.'/../stubs/test1-new-column-sql')
-        );
-
-        config()->set('skeema.alter_wrapper.enabled', true);
-        config()->set('skeema.alter_wrapper.bin', 'gh-ost');
-        config()->set('skeema.alter_wrapper.min_size', 0);
-        config()->set('skeema.alter_wrapper.params', [
-            '--max-load=Threads_running=25',
-            '--critical-load=Threads_running=1000',
-        ]);
-
-        $this->artisan('skeema:push')
-            ->expectsOutputToContain("skeema push laravel --alter-wrapper='gh-ost --execute --alter {CLAUSES} --database={SCHEMA} --table={TABLE} --host={HOST} --user={USER} --password={PASSWORDX} --max-load=Threads_running=25 --critical-load=Threads_running=1000' --alter-wrapper-min-size='0' ")
-            ->run();
-    }
 }

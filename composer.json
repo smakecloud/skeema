@@ -15,6 +15,7 @@
     "require-dev": {
         "laravel/pint": "^1.4",
         "orchestra/testbench": "^7.22",
+        "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^7.2|^8.4|^9.5"
     },
     "autoload": {
@@ -32,6 +33,7 @@
         "test:coverage": "php -dpcov.enabled=1 -dpcov.directory=. -dpcov.exclude='~vendor~' vendor/bin/phpunit -d memory_limit=6144M --coverage-html coverage --verbose",
         "lint": "vendor/bin/pint --test",
         "lint:fix": "vendor/bin/pint",
+        "phpstan": "vendor/bin/phpstan analyse src",
         "post-autoload-dump": [
             "@php vendor/bin/testbench package:discover --ansi"
         ]

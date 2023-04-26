@@ -3,9 +3,11 @@
 namespace Smakecloud\Skeema;
 
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
+use Smakecloud\Skeema\Commands\SkeemaDeploymentCheckCommand;
 use Smakecloud\Skeema\Commands\SkeemaDiffCommand;
 use Smakecloud\Skeema\Commands\SkeemaInitCommand;
 use Smakecloud\Skeema\Commands\SkeemaLintCommand;
+use Smakecloud\Skeema\Commands\SkeemaMigrateAndPullCommand;
 use Smakecloud\Skeema\Commands\SkeemaPullCommand;
 use Smakecloud\Skeema\Commands\SkeemaPushCommand;
 
@@ -38,10 +40,13 @@ class ServiceProvider extends IlluminateServiceProvider
             'command.skeema:push' => SkeemaPushCommand::class,
             'command.skeema:diff' => SkeemaDiffCommand::class,
             'command.skeema:lint' => SkeemaLintCommand::class,
+            'command.skeema:deployment-check' => SkeemaDeploymentCheckCommand::class,
+            'command.skeema:migrate-and-pull' => SkeemaMigrateAndPullCommand::class,
         ])->each(function ($class, $key) {
             $this->app->singleton($key, $class);
         });
 
         $this->commands($commands->keys()->toArray());
     }
+
 }

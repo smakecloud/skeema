@@ -66,8 +66,6 @@ abstract class SkeemaBaseCommand extends Command
         try {
             $command = $this->getCommand($this->getConnection());
 
-            $this->info('Running: '.$command);
-
             $this->runProcess($command);
         } catch (\Smakecloud\Skeema\Exceptions\ExceptionWithExitCode $e) {
             $this->error($e->getMessage());
@@ -102,7 +100,7 @@ abstract class SkeemaBaseCommand extends Command
      *
      * @return mixed
      */
-    protected function getConfig(string $key, $default = null)
+    protected function getConfig(string $key, mixed $default = null)
     {
         if (Str::startsWith($key, 'skeema.')) {
             $replacedString = Str::of($key)
@@ -192,7 +190,7 @@ abstract class SkeemaBaseCommand extends Command
     /**
      * Gets the environment variables to pass to the Skeema process.
      *
-     * @return array
+     * @return array<string, string>
      */
     protected function getProcessEnvironment()
     {
@@ -236,7 +234,7 @@ abstract class SkeemaBaseCommand extends Command
     /**
      * Called on successfull  execution.
      */
-    protected function onSuccess(Process $process)
+    protected function onSuccess(Process $process): void
     {
         //$this->info($process->getOutput());
     }
@@ -246,7 +244,7 @@ abstract class SkeemaBaseCommand extends Command
      *
      * @codeCoverageIgnore
      */
-    protected function onError(Process $process)
+    protected function onError(Process $process): void
     {
         //$this->error($process->getErrorOutput());
     }
@@ -256,7 +254,7 @@ abstract class SkeemaBaseCommand extends Command
      *
      * @return string
      */
-    protected function getAlterWrapperCommand()
+    protected function getAlterWrapperCommand(): string
     {
         return Str::of($this->getConfig(('skeema.alter_wrapper.bin'), 'gh-ost'))
             ->append(' --execute')
@@ -273,7 +271,7 @@ abstract class SkeemaBaseCommand extends Command
     /**
      * Get the base arguments for the skeema command.
      *
-     * @return array
+     * @return array<string, string>
      */
     protected function getBaseArgs(): array
     {
@@ -295,7 +293,7 @@ abstract class SkeemaBaseCommand extends Command
      * Get the skeema command.
      *
      * @param  string  $command
-     * @param  array  $arguments
+     * @param  array<string, mixed>  $arguments
      * @return string
      */
     protected function getSkeemaCommand(string $command, array $arguments = [], bool $withBaseArgs = true): string
@@ -314,7 +312,7 @@ abstract class SkeemaBaseCommand extends Command
     /**
      * Confirm or force if we are running in production.
      */
-    protected function confirmToProceed($warning = 'Application In Production!')
+    protected function confirmToProceed(string $warning = 'Application In Production!'): void
     {
         if ($this->option('force')) {
             return;
@@ -332,17 +330,22 @@ abstract class SkeemaBaseCommand extends Command
     /**
      * Check if we are running in production
      */
-    private function applicationIsRunningInProduction()
+    private function applicationIsRunningInProduction(): bool
     {
         return $this->laravel->environment() === 'production';
     }
 
-    protected function ensureSkeemaConfigFileExists()
+    protected function ensureSkeemaConfigFileExists(): void
     {
         $configFilePath = $this->getSkeemaDir().DIRECTORY_SEPARATOR.'.skeema';
 
         if (! $this->files->exists($configFilePath)) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException($configFilePath);
         }
+    }
+
+    public function getSignature(): string
+    {
+        return $this->signature;
     }
 }

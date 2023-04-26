@@ -3,6 +3,7 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\ParallelTesting;
 use Symfony\Component\Process\Process;
 
 /**
@@ -30,6 +31,9 @@ class SkeemaPushCommand extends SkeemaBaseCommand
         .' {--skip-lint : Skip Check modified objects for problems before proceeding}'
         .' {--dry-run : Output DDL but don’t run it; equivalent to skeema diff}'
         .' {--foreign-key-checks : Force the server to check referential integrity of any new foreign key}'
+        .' {--temp-schema= : This option specifies the name of the temporary schema to use for Skeema workspace operations.}'
+        .' {--temp-schema-threads= : This option controls the concurrency level for CREATE queries when populating the workspace, as well as DROP queries when cleaning up the workspace.}'
+        .' {--temp-schema-binlog= : This option controls whether or not workspace operations are written to the database’s binary log, which means they will be executed on replicas if replication is configured.}'
         .' {--force}'
         .' {--connection=}';
 
@@ -43,9 +47,42 @@ class SkeemaPushCommand extends SkeemaBaseCommand
         return $this->getSkeemaCommand('push '.static::SKEEMA_ENV_NAME, $this->makeArgs());
     }
 
+    /**
+     * Get the temp schema name.
+     */
+    private function getTempSchemaName(): string
+    {
+        $parallelTestingToken = ParallelTesting::token();
+
+        if ($parallelTestingToken) {
+            return '_skeema_temp_'.$parallelTestingToken;
+        }
+
+        return '_skeema_temp';
+    }
+
+    /**
+     * Make the arguments for the skeema push command.
+     *
+     * @return array<string, mixed>
+     */
     private function makeArgs(): array
     {
         $args = [];
+
+        if ($this->option('temp-schema')) {
+            $args['temp-schema'] = $this->option('temp-schema');
+        } else {
+            $args['temp-schema'] = $this->getTempSchemaName();
+        }
+
+        if ($this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads'))) {
+            $args['temp-schema-threads'] = $this->option('temp-schema-threads');
+        }
+
+        if ($this->option('temp-schema-binlog')) {
+            $args['temp-schema-binlog'] = $this->option('temp-schema-binlog');
+        }
 
         if ($this->option('alter-algorithm')) {
             $args['alter-algorithm'] = $this->option('alter-algorithm');
@@ -143,11 +180,11 @@ class SkeemaPushCommand extends SkeemaBaseCommand
     /**
      * Reference: https://www.skeema.io/docs/commands/lint/
      */
-    protected function onError(Process $process)
+    protected function onError(Process $process): void
     {
         if ($process->getExitCode() >= 2) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaPushFatalErrorException();
-        } else {
+        } elseif ($process->getExitCode() === 1 && !$this->option('dry-run')) {
             // @codeCoverageIgnoreStart
             throw new \Smakecloud\Skeema\Exceptions\SkeemaPushCouldNotUpdateTableException();
             // @codeCoverageIgnoreEnd

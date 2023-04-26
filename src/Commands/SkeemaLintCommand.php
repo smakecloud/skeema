@@ -3,6 +3,7 @@
 namespace Smakecloud\Skeema\Commands;
 
 use Illuminate\Database\Connection;
+use Illuminate\Support\Facades\ParallelTesting;
 use Symfony\Component\Process\Process;
 
 /**
@@ -23,6 +24,9 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         .' {--update-views : Reformat views in canonical single-line form}'
         .' {--ignore-warnings : Exit with status 0 even if warnings are found}'
         .' {--output-format=default : Output format (default, github, or quiet)}'
+        .' {--temp-schema= : This option specifies the name of the temporary schema to use for Skeema workspace operations.}'
+        .' {--temp-schema-threads= : This option controls the concurrency level for CREATE queries when populating the workspace, as well as DROP queries when cleaning up the workspace.}'
+        .' {--temp-schema-binlog= : This option controls whether or not workspace operations are written to the database’s binary log, which means they will be executed on replicas if replication is configured.}'
         .' {--connection=}';
 
     protected $description = 'Lint the database schema ';
@@ -34,9 +38,42 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         return $this->getSkeemaCommand('lint '.static::SKEEMA_ENV_NAME, $this->makeArgs());
     }
 
+    /**
+     * Get the temp schema name.
+     */
+    private function getTempSchemaName(): string
+    {
+        $parallelTestingToken = ParallelTesting::token();
+
+        if ($parallelTestingToken) {
+            return '_skeema_temp_'.$parallelTestingToken;
+        }
+
+        return '_skeema_temp';
+    }
+
+    /**
+     * Get the lint arguments.
+     *
+     * @return array<string, mixed>
+     */
     private function makeArgs(): array
     {
         $args = [];
+
+        if ($this->option('temp-schema')) {
+            $args['temp-schema'] = $this->option('temp-schema');
+        } else {
+            $args['temp-schema'] = $this->getTempSchemaName();
+        }
+
+        if ($this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads'))) {
+            $args['temp-schema-threads'] = $this->option('temp-schema-threads');
+        }
+
+        if ($this->option('temp-schema-binlog')) {
+            $args['temp-schema-binlog'] = $this->option('temp-schema-binlog');
+        }
 
         if ($this->option('skip-format')) {
             $args['skip-format'] = true;
@@ -82,11 +119,16 @@ class SkeemaLintCommand extends SkeemaBaseCommand
 
     /**
      * Get the lint rules.
+     *
+     * @return array<string, string>
      */
     private function lintRules()
     {
-        return collect($this->getConfig('skeema.lint.rules', []))
-            ->mapWithKeys(function ($value, $key) {
+        /** @var array<string, string> */
+        $rules = $this->getConfig('skeema.lint.rules', []);
+
+        return collect($rules)
+            ->mapWithKeys(function (string $value, string $key) {
                 $option = $this->laravel->make($key)->getOptionString();
 
                 return [$option => $value];
@@ -96,14 +138,18 @@ class SkeemaLintCommand extends SkeemaBaseCommand
     protected function onOutput($type, $buffer)
     {
         if ($this->option('output-format') === 'quiet') {
+            // @codeCoverageIgnoreStart
             return;
+        // @codeCoverageIgnoreEnd
         } elseif ($this->option('output-format') === 'github') {
             $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\]\w?(.*\.sql):(\d*):(.*)$/m';
 
             preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
 
             if (blank($matches)) {
-                return parent::onOutput($type, $buffer);
+                parent::onOutput($type, $buffer);
+
+                return;
             }
 
             collect($matches)->each(function ($match) {
@@ -120,14 +166,16 @@ class SkeemaLintCommand extends SkeemaBaseCommand
                 $this->output->writeln("::{$level} file={$file},line={$line}::{$message}");
             });
         } else {
-            return parent::onOutput($type, $buffer);
+            parent::onOutput($type, $buffer);
+
+            return;
         }
     }
 
     /**
      * Reference: https://www.skeema.io/docs/commands/lint/
      */
-    protected function onError(Process $process)
+    protected function onError(Process $process): void
     {
         if ($process->getExitCode() >= 2) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException();
