@@ -35,6 +35,7 @@ This laravel package provides a set of commands to help you manage your database
 - [Disclaimer](#disclaimer)
 - [Credits](#credits)
 - [License](#license)
+
 ## Installation
 
 **Required**
