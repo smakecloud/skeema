@@ -16,6 +16,25 @@ This laravel package provides a set of commands to help you manage your database
 ✅ Utility commands to help you moving from laravel migrations to skeema schema files.<br>
 ✅ Manage your database schema in a more declarative way.<br>
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+  - [Dumping the Schema](#dumping-the-schema)
+  - [Diffing the Schema](#diffing-the-schema)
+  - [Linting the Schema](#linting-the-schema)
+  - [Pushing the Schema](#pushing-the-schema)
+  - [Pulling the Schema](#pulling-the-schema)
+  - [Deployment Checking](#deployment-checking)
+  - [Laravel Migrations to Skeema "converting"](#laravel-migrations-to-skeema-converting)
+- [Quirks](#quirks)
+  - [parallel-testing](#parallel-testing)
+  - [larastan](#larastan)
+- [Testing](#testing)
+- [Disclaimer](#disclaimer)
+- [Credits](#credits)
+- [License](#license)
 ## Installation
 
 **Required**
@@ -437,6 +456,39 @@ This is achieved by executing the following steps:
 $ php artisan skeema:convert-migrations
 ```
 
+## Quirks
+
+### Parallel Testing
+
+You have to limit the skeema option `tmp-schema-threads` to 1.
+
+For example:
+`tests/Concerns/ResetsData.php`
+```php
+...
+    protected function resetDatabase(): void
+    {
+        if (! isset(static::$initializedDatabases[$this->parallelToken()])) {
+            ...
+
+            config()->set('skeema.alter_wrapper.enabled', false);
+            $this->artisan('skeema:push --allow-unsafe --force --temp-schema-threads=1');
+
+            ...
+```
+
+### Larastan
+
+To use this package in combination with [Larastan](https://github.com/nunomaduro/larastan) you have to add the skeema dumpfiles dir to the phpstan paramaters like this:
+
+`phpstan.neon.dist`
+```
+...
+parameters:
+    squashedMigrationsPath:
+        - database/skeema
+...
+```
 
 ## Testing
 
