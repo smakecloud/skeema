@@ -32,6 +32,7 @@ This laravel package provides a set of commands to help you manage your database
   - [parallel-testing](#parallel-testing)
   - [larastan](#larastan)
 - [Testing](#testing)
+- [Roadmap](#roadmap)
 - [Disclaimer](#disclaimer)
 - [Credits](#credits)
 - [License](#license)
