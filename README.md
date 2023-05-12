@@ -42,10 +42,27 @@ This laravel package provides a set of commands to help you manage your database
 
 Download [Skeema](https://www.skeema.io/) ( tested with skeema version 1.9.0-community )
 
+For Linux:
+
 ```bash
 $ curl -LO https://github.com/skeema/skeema/releases/download/v1.9.0/skeema_1.9.0_linux_amd64.tar.gz
 $ tar -xzvf skeema_1.9.0_linux_amd64.tar.gz skeema
 $ sudo mv skeema /usr/local/bin/
+```
+For Intel-based Macs:
+
+```bash
+curl -LO https://github.com/skeema/skeema/releases/download/v1.9.0/skeema_1.9.0_mac_amd64.tar.gz
+tar -xzvf skeema_1.9.0_mac_amd64.tar.gz skeema
+mv skeema /usr/local/bin/
+```
+
+For ARM-based Macs (Apple Silicon, e.g. M1):
+
+```bash
+curl -LO https://github.com/skeema/skeema/releases/download/v1.9.0/skeema_1.9.0_mac_arm64.tar.gz
+tar -xzvf skeema_1.9.0_mac_arm64.tar.gz skeema
+mv skeema /usr/local/bin/
 ```
 
 <details open="open">
@@ -53,10 +70,28 @@ $ sudo mv skeema /usr/local/bin/
 <br>
 Download <a href="https://github.com/github/gh-ost/releases">gh-ost</a> ( tested with gh-ost version 1.1.5 )<br>
 
+For Linux:
+
 ```bash
 $ curl -LO https://github.com/github/gh-ost/releases/download/v1.1.5/gh-ost-binary-linux-amd64-20220707162303.tar.gz
 $ tar -xzvf gh-ost-binary-linux-amd64-20220707162303.tar.gz gh-ost
 $ sudo mv gh-ost /usr/local/bin/
+```
+
+For Intel-based Macs:
+
+```bash
+curl -LO https://github.com/github/gh-ost/releases/download/v1.1.5/gh-ost-binary-linux-amd64-20220707162303.tar.gz
+tar -xzvf gh-ost-binary-linux-amd64-20220707162303.tar.gz gh-ost
+sudo mv gh-ost /usr/local/bin/
+```
+
+For ARM-based Macs (Apple Silicon, e.g. M1):
+
+```bash
+curl -LO https://github.com/github/gh-ost/releases/download/v1.1.5/gh-ost-binary-linux-arm64-20220707162303.tar.gz
+tar -xzvf gh-ost-binary-linux-arm64-20220707162303.tar.gz gh-ost
+sudo mv gh-ost /usr/local/bin/
 ```
 
 </details>
