@@ -49,7 +49,7 @@ class SkeemaMigrateAndPullCommand extends Command
         $files = collect($this->migrator->getMigrationFiles($this->getMigrationPath()));
 
         if ($files->isNotEmpty()) {
-            if (blank($this->option('no-push'))) {
+            if (! $this->option('no-push')) {
                 $status = $this->call('skeema:push', [
                     '--force' => true,
                     '--allow-unsafe' => true,
@@ -68,7 +68,7 @@ class SkeemaMigrateAndPullCommand extends Command
 
             $files->each(function ($file, $key) use ($ran) {
                 if (
-                    blank($this->option('keep-migrations'))
+                    ! $this->option('keep-migrations')
                     && $ran->contains($key)
                 ) {
                     $this->warn("Deleting ran migration: {$key} {$file}");
@@ -83,7 +83,7 @@ class SkeemaMigrateAndPullCommand extends Command
 
                 $this->info("Ran migration: {$key} {$file}");
 
-                if (blank($this->option('keep-migrations'))) {
+                if (! $this->option('keep-migrations')) {
                     $this->warn("Deleting ran migration: {$key} {$file}");
                     $this->filesystem->delete($file);
                 }
