@@ -51,8 +51,6 @@ abstract class SkeemaBaseCommand extends Command
      */
     public function handle(): int
     {
-        $exitCode = 0;
-
         $this->files = $this->laravel->get(Filesystem::class);
 
         $this->processFactory = function (...$arguments) {
@@ -68,27 +66,27 @@ abstract class SkeemaBaseCommand extends Command
 
             $this->runProcess($command);
         } catch (\Smakecloud\Skeema\Exceptions\ExceptionWithExitCode $e) {
-            $this->error($e->getMessage());
+            collect([$e->getMessage()])
+                ->each(fn ($message) => $this->error($message));
 
-            $exitCode = $e->getExitCode();
+            return $e->getExitCode();
+        } catch (\Exception $e) {
+            collect([$e->getMessage()])
+                ->each(fn ($message) => $this->error($message));
+
+            return -1;
         }
-        // @codeCoverageIgnoreStart
-        catch (\Exception $e) {
-            $this->error($e->getMessage());
 
-            $exitCode = -1;
-        }
-        // @codeCoverageIgnoreEnd
-
-        return $exitCode;
+        return 0;
     }
+
 
     /**
      * Get the path to the skeema configuration file.
      *
      * @return string
      */
-    protected function getSkeemaDir()
+    protected function getSkeemaDir(): string
     {
         return $this->laravel->basePath(
             $this->getConfig('skeema.dir', 'database'.DIRECTORY_SEPARATOR.'skeema')
@@ -102,14 +100,13 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function getConfig(string $key, mixed $default = null)
     {
-        if (Str::startsWith($key, 'skeema.')) {
-            $replacedString = Str::of($key)
-                ->replaceFirst('skeema.', '')
-                ->toString();
+        $optionKey = Str::of($key)
+            ->prepend('skeema.')
+            ->replaceFirst('skeema.', '')
+            ->toString();
 
-            if ($this->hasOption($replacedString)) {
-                return $this->option($replacedString);
-            }
+        if (filled($optionKey) &&  $this->hasOption($optionKey)) {
+            return $this->option($optionKey);
         }
 
         return $this->laravel->get('config')->get($key, $default);
@@ -154,7 +151,7 @@ abstract class SkeemaBaseCommand extends Command
      *
      * @return void
      */
-    protected function ensureSkeemaDirExists()
+    protected function ensureSkeemaDirExists(): void
     {
         if (! $this->files->exists($this->getSkeemaDir())) {
             $this->files->makeDirectory($this->getSkeemaDir(), 0755, true);
@@ -167,7 +164,7 @@ abstract class SkeemaBaseCommand extends Command
      * @param  string  $command
      * @return void
      */
-    protected function runProcess($command)
+    protected function runProcess($command): void
     {
         $process = call_user_func(
             $this->processFactory,
@@ -210,7 +207,7 @@ abstract class SkeemaBaseCommand extends Command
      * @param  string  $buffer
      * @return void
      */
-    protected function onOutput($type, $buffer)
+    protected function onOutput($type, $buffer): void
     {
         $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\] (.*)$/m';
         preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
@@ -298,15 +295,14 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function getSkeemaCommand(string $command, array $arguments = [], bool $withBaseArgs = true): string
     {
-        $command = Str::of($this->getConfig('skeema.bin', 'skeema'))
+       return Str::of($this->getConfig('skeema.bin', 'skeema'))
             ->append(' '.$command)
-            ->append(' '.$this->serializeArgs($arguments));
-
-        if ($withBaseArgs) {
-            $command = $command->append(' '.$this->serializeArgs($this->getBaseArgs()));
-        }
-
-        return $command->toString();
+            ->append(' '.$this->serializeArgs($arguments))
+            ->when(
+                filled($withBaseArgs),
+                fn ($command) => $command->append(' '.$this->serializeArgs($this->getBaseArgs()))
+            )
+            ->toString();
     }
 
     /**
@@ -319,7 +315,9 @@ abstract class SkeemaBaseCommand extends Command
         }
 
         if ($this->applicationIsRunningInProduction()) {
-            if ($this->confirm($warning.' Proceed?', false)) {
+            $this->warn($warning);
+
+            if ($this->confirm('Do you really want to proceed?', false)) {
                 return;
             }
 
