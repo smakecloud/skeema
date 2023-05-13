@@ -146,7 +146,7 @@ class SkeemaPushCommand extends SkeemaBaseCommand
             throw new \Smakecloud\Skeema\Exceptions\SkeemaPushFatalErrorException();
         }
 
-        if (!$this->option('dry-run')) {
+        if (! $this->option('dry-run')) {
             // @codeCoverageIgnoreStart
             throw new \Smakecloud\Skeema\Exceptions\SkeemaPushCouldNotUpdateTableException();
             // @codeCoverageIgnoreEnd

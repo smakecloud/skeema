@@ -134,7 +134,6 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         parent::onOutput($type, $buffer);
     }
 
-
     /**
      * Reference: https://www.skeema.io/docs/commands/lint/
      */

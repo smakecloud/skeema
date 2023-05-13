@@ -72,5 +72,4 @@ class SkeemaPushCommandTest extends TestCase
                 (new \Smakecloud\Skeema\Exceptions\SkeemaPushFatalErrorException())->getExitCode()
             );
     }
-
 }

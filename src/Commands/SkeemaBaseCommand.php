@@ -80,7 +80,6 @@ abstract class SkeemaBaseCommand extends Command
         return 0;
     }
 
-
     /**
      * Get the path to the skeema configuration file.
      *
@@ -105,7 +104,7 @@ abstract class SkeemaBaseCommand extends Command
             ->replaceFirst('skeema.', '')
             ->toString();
 
-        if (filled($optionKey) &&  $this->hasOption($optionKey)) {
+        if (filled($optionKey) && $this->hasOption($optionKey)) {
             return $this->option($optionKey);
         }
 
@@ -295,14 +294,14 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function getSkeemaCommand(string $command, array $arguments = [], bool $withBaseArgs = true): string
     {
-       return Str::of($this->getConfig('skeema.bin', 'skeema'))
-            ->append(' '.$command)
-            ->append(' '.$this->serializeArgs($arguments))
-            ->when(
-                filled($withBaseArgs),
-                fn ($command) => $command->append(' '.$this->serializeArgs($this->getBaseArgs()))
-            )
-            ->toString();
+        return Str::of($this->getConfig('skeema.bin', 'skeema'))
+             ->append(' '.$command)
+             ->append(' '.$this->serializeArgs($arguments))
+             ->when(
+                 filled($withBaseArgs),
+                 fn ($command) => $command->append(' '.$this->serializeArgs($this->getBaseArgs()))
+             )
+             ->toString();
     }
 
     /**
