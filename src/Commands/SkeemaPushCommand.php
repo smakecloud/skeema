@@ -115,7 +115,7 @@ class SkeemaPushCommand extends SkeemaBaseCommand
      *
      * The method merges the base and diff rules, creates an array of options from them.
      *
-     * @return array The associative array of options to run Skeema's lint command with.
+     * @return array<string, mixed> The associative array of options to run Skeema's lint command with.
      */
     private function getLintArgs(): array
     {

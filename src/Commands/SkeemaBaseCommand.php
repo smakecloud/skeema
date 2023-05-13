@@ -298,8 +298,8 @@ abstract class SkeemaBaseCommand extends Command
              ->append(' '.$command)
              ->append(' '.$this->serializeArgs($arguments))
              ->when(
-                 filled($withBaseArgs),
-                 fn ($command) => $command->append(' '.$this->serializeArgs($this->getBaseArgs()))
+                 $withBaseArgs,
+                 fn ($skeemaCommand) => $skeemaCommand->append(' '.$this->serializeArgs($this->getBaseArgs()))
              )
              ->toString();
     }
@@ -314,9 +314,9 @@ abstract class SkeemaBaseCommand extends Command
         }
 
         if ($this->applicationIsRunningInProduction()) {
-            $this->warn($warning);
+            $this->warn('Attention - Your consent has significant implications.');
 
-            if ($this->confirm('Do you really want to proceed?', false)) {
+            if ($this->confirm($warning.' Proceed?', false)) {
                 return;
             }
 

@@ -37,6 +37,7 @@ class SkeemaPushCommandTest extends TestCase
         $this->artisan('skeema:init --force')->assertSuccessful();
 
         $this->artisan('skeema:push')
+            ->expectsOutput('Attention - Your consent has significant implications.')
             ->expectsConfirmation('Running skeema push in production. Proceed?', 'no')
             ->expectsOutput('Command cancelled.')
             ->assertExitCode(1);

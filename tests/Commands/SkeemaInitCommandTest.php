@@ -23,6 +23,7 @@ class SkeemaInitCommandTest extends TestCase
         $this->assertTrue($this->app->isProduction());
 
         $this->artisan('skeema:init')
+            ->expectsOutput('Attention - Your consent has significant implications.')
             ->expectsConfirmation('Running skeema init will overwrite any existing schema files. Proceed?', 'no')
             ->expectsOutput('Command cancelled.')
             ->assertExitCode(
@@ -30,6 +31,7 @@ class SkeemaInitCommandTest extends TestCase
             );
 
         $this->artisan('skeema:init')
+            ->expectsOutput('Attention - Your consent has significant implications.')
             ->expectsConfirmation('Running skeema init will overwrite any existing schema files. Proceed?', 'yes')
             ->assertExitCode(0);
     }

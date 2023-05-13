@@ -64,8 +64,6 @@ class SkeemaLintCommand extends SkeemaBaseCommand
             'temp-schema-threads' => ($this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads'))) ? $this->option('temp-schema-threads') : null,
             'temp-schema-binlog' => $this->option('temp-schema-binlog'),
             'skip-format' => $this->option('skip-format') ? true : null,
-            'include-auto-inc' => $this->option('include-auto-inc') ? true : null,
-            'new-schemas' => $this->option('new-schemas') ? true : null,
             'strip-definer' => $this->option('strip-definer'),
             'strip-partitioning' => $this->option('strip-partitioning') ? true : null,
             'update-views' => $this->option('update-views') ? true : null,

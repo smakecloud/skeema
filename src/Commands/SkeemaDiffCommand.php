@@ -88,12 +88,12 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
             'allow-unsafe' => $this->option('allow-unsafe') ? true : null,
             'skip-verify' => $this->option('skip-verify') ? true : null,
             'partitioning' => $this->option('partitioning'),
-            'strip-definer' => $this->option('strip-definer') ? true : null,
-            'allow-auto-inc' => $this->option('allow-auto-inc') ? true : null,
-            'allow-charset' => $this->option('allow-charset') ? true : null,
-            'allow-compression' => $this->option('allow-compression') ? true : null,
-            'allow-definer' => $this->option('allow-definer') ? true : null,
-            'allow-engine' => $this->option('allow-engine') ? true : null,
+            'strip-definer' => $this->option('strip-definer'),
+            'allow-auto-inc' => $this->option('allow-auto-inc'),
+            'allow-charset' => $this->option('allow-charset'),
+            'allow-compression' => $this->option('allow-compression'),
+            'allow-definer' => $this->option('allow-definer'),
+            'allow-engine' => $this->option('allow-engine'),
             'safe-below-size' => $this->option('safe-below-size'),
         ])
         ->filter()
@@ -121,7 +121,7 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
      *
      * The method merges the base and diff rules, creates an array of options from them.
      *
-     * @return array The associative array of options to run Skeema's lint command with.
+     * @return array<string, mixed> The associative array of options to run Skeema's lint command with.
      */
     private function getLintArgs(): array
     {
