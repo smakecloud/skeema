@@ -78,26 +78,27 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
     {
         $args = collect([
             'temp-schema' => $this->option('temp-schema') ?? $this->getTempSchemaName(),
-            'temp-schema-threads' => ($this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads'))) ? $this->option('temp-schema-threads') : null,
+            'temp-schema-threads' => $this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads')) ? $this->option('temp-schema-threads') : null,
             'temp-schema-binlog' => $this->option('temp-schema-binlog'),
             'alter-algorithm' => $this->option('alter-algorithm'),
             'alter-lock' => $this->option('alter-lock'),
-            'alter-validate-virtual' => $this->option('alter-validate-virtual'),
-            'compare-metadata' => $this->option('compare-metadata'),
-            'exact-match' => $this->option('exact-match'),
-            'allow-unsafe' => $this->option('allow-unsafe'),
-            'skip-verify' => $this->option('skip-verify'),
+            'alter-validate-virtual' => $this->option('alter-validate-virtual') ? true : null,
+            'compare-metadata' => $this->option('compare-metadata') ? true : null,
+            'exact-match' => $this->option('exact-match') ? true : null,
+            'allow-unsafe' => $this->option('allow-unsafe') ? true : null,
+            'skip-verify' => $this->option('skip-verify') ? true : null,
             'partitioning' => $this->option('partitioning'),
-            'strip-definer' => $this->option('strip-definer'),
-            'allow-auto-inc' => $this->option('allow-auto-inc'),
-            'allow-charset' => $this->option('allow-charset'),
-            'allow-compression' => $this->option('allow-compression'),
-            'allow-definer' => $this->option('allow-definer'),
-            'allow-engine' => $this->option('allow-engine'),
+            'strip-definer' => $this->option('strip-definer') ? true : null,
+            'allow-auto-inc' => $this->option('allow-auto-inc') ? true : null,
+            'allow-charset' => $this->option('allow-charset') ? true : null,
+            'allow-compression' => $this->option('allow-compression') ? true : null,
+            'allow-definer' => $this->option('allow-definer') ? true : null,
+            'allow-engine' => $this->option('allow-engine') ? true : null,
             'safe-below-size' => $this->option('safe-below-size'),
         ])
         ->filter()
         ->merge($this->getLintArgs())
+        ->filter()
         ->toArray();
 
         if ($this->getConfig('skeema.alter_wrapper.enabled', false)) {
