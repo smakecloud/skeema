@@ -48,51 +48,54 @@ class SkeemaMigrateAndPullCommand extends Command
     {
         $files = collect($this->migrator->getMigrationFiles($this->getMigrationPath()));
 
-        if ($files->count() > 0) {
-            if (! $this->option('no-push')) {
+        if ($files->isNotEmpty()) {
+            if (blank($this->option('no-push'))) {
                 $status = $this->call('skeema:push', [
                     '--force' => true,
                     '--allow-unsafe' => true,
                     '--skip-lint' => true,
                 ]);
-                // @codeCoverageIgnoreStart
-                if ($status !== 0) {
-                    throw new Exception(
-                        'skeema:push failed with exit code: '.$status
-                        .' Files: '.implode(', ', $files->keys()->toArray())
-                    );
-                }
-                // @codeCoverageIgnoreEnd
+
+                throw_if(
+                    $status !== 0,
+                    Exception::class,
+                    'skeema:push failed with exit code: '.$status
+                    .' Files: '.implode(', ', $files->keys()->toArray())
+                );
             }
 
             $ran = collect($this->migrator->getRepository()->getRan());
 
             $files->each(function ($file, $key) use ($ran) {
-                if (! $this->option('keep-migrations') && $ran->contains($key)) {
+                if (
+                    blank($this->option('keep-migrations'))
+                    && $ran->contains($key)
+                ) {
                     $this->warn("Deleting ran migration: {$key} {$file}");
-
                     $this->filesystem->delete($file);
-                } else {
-                    $this->filesystem->requireOnce($file);
 
-                    $this->migrator->runPending([$file]);
+                    return;
+                }
 
-                    $this->info("Ran migration: {$key} {$file}");
+                $this->filesystem->requireOnce($file);
 
-                    if (! $this->option('keep-migrations')) {
-                        $this->warn("Deleting ran migration: {$key} {$file}");
+                $this->migrator->runPending([$file]);
 
-                        $this->filesystem->delete($file);
-                    }
+                $this->info("Ran migration: {$key} {$file}");
+
+                if (blank($this->option('keep-migrations'))) {
+                    $this->warn("Deleting ran migration: {$key} {$file}");
+                    $this->filesystem->delete($file);
                 }
             });
 
             $status = $this->call('skeema:pull');
-            // @codeCoverageIgnoreStart
-            if ($status !== 0) {
-                throw new Exception('skeema:pull failed with exit code: '.$status);
-            }
-            // @codeCoverageIgnoreEnd
+
+            throw_if(
+                $status !== 0,
+                Exception::class,
+                'skeema:pull failed with exit code: '.$status
+            );
 
             $this->info('Done!');
         }
