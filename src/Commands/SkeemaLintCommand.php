@@ -59,57 +59,23 @@ class SkeemaLintCommand extends SkeemaBaseCommand
      */
     private function makeArgs(): array
     {
-        $args = [];
-
-        if ($this->option('temp-schema')) {
-            $args['temp-schema'] = $this->option('temp-schema');
-        } else {
-            $args['temp-schema'] = $this->getTempSchemaName();
-        }
-
-        if ($this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads'))) {
-            $args['temp-schema-threads'] = $this->option('temp-schema-threads');
-        }
-
-        if ($this->option('temp-schema-binlog')) {
-            $args['temp-schema-binlog'] = $this->option('temp-schema-binlog');
-        }
-
-        if ($this->option('skip-format')) {
-            $args['skip-format'] = true;
-        }
-
-        if ($this->option('strip-definer')) {
-            $args['strip-definer'] = $this->option('strip-definer');
-        }
-
-        if ($this->option('strip-partitioning')) {
-            $args['strip-partitioning'] = true;
-        }
-
-        if ($this->option('update-views')) {
-            $args['update-views'] = true;
-        }
-
-        if ($this->option('allow-auto-inc')) {
-            $args['allow-auto-inc'] = $this->option('allow-auto-inc');
-        }
-
-        if ($this->option('allow-charset')) {
-            $args['allow-charset'] = $this->option('allow-charset');
-        }
-
-        if ($this->option('allow-compression')) {
-            $args['allow-compression'] = $this->option('allow-compression');
-        }
-
-        if ($this->option('allow-definer')) {
-            $args['allow-definer'] = $this->option('allow-definer');
-        }
-
-        if ($this->option('allow-engine')) {
-            $args['allow-engine'] = $this->option('allow-engine');
-        }
+        $args = collect([
+            'temp-schema' => $this->option('temp-schema') ?: $this->getTempSchemaName(),
+            'temp-schema-threads' => ($this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads'))) ? $this->option('temp-schema-threads') : null,
+            'temp-schema-binlog' => $this->option('temp-schema-binlog'),
+            'skip-format' => $this->option('skip-format') ? true : null,
+            'include-auto-inc' => $this->option('include-auto-inc') ? true : null,
+            'new-schemas' => $this->option('new-schemas') ? true : null,
+            'strip-definer' => $this->option('strip-definer'),
+            'strip-partitioning' => $this->option('strip-partitioning') ? true : null,
+            'update-views' => $this->option('update-views') ? true : null,
+            'allow-auto-inc' => $this->option('allow-auto-inc'),
+            'allow-charset' => $this->option('allow-charset'),
+            'allow-compression' => $this->option('allow-compression'),
+            'allow-definer' => $this->option('allow-definer'),
+            'allow-engine' => $this->option('allow-engine'),
+        ])->filter()
+        ->toArray();
 
         return [
             ...$this->lintRules(),
@@ -135,42 +101,39 @@ class SkeemaLintCommand extends SkeemaBaseCommand
             })->toArray();
     }
 
-    protected function onOutput($type, $buffer)
+    protected function onOutput($type, $buffer): void
     {
         if ($this->option('output-format') === 'quiet') {
-            // @codeCoverageIgnoreStart
             return;
-        // @codeCoverageIgnoreEnd
-        } elseif ($this->option('output-format') === 'github') {
+        }
+
+        if ($this->option('output-format') === 'github') {
             $re = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) \[([A-Z]*)\]\w?(.*\.sql):(\d*):(.*)$/m';
 
             preg_match_all($re, $buffer, $matches, PREG_SET_ORDER, 0);
 
-            if (blank($matches)) {
-                parent::onOutput($type, $buffer);
+            if (filled($matches)) {
+                collect($matches)->each(function ($match) {
+                    $level = match (strtolower(trim($match[2]))) {
+                        'error' => 'error',
+                        'warn' => 'warning',
+                        default => 'notice',
+                    };
+
+                    $file = trim($match[3]);
+                    $line = trim($match[4]);
+                    $message = trim($match[5]);
+
+                    $this->output->writeln("::{$level} file={$file},line={$line}::{$message}");
+                });
 
                 return;
             }
-
-            collect($matches)->each(function ($match) {
-                $level = match (strtolower(trim($match[2]))) {
-                    'error' => 'error',
-                    'warn' => 'warning',
-                    default => 'notice',
-                };
-
-                $file = trim($match[3]);
-                $line = trim($match[4]);
-                $message = trim($match[5]);
-
-                $this->output->writeln("::{$level} file={$file},line={$line}::{$message}");
-            });
-        } else {
-            parent::onOutput($type, $buffer);
-
-            return;
         }
+
+        parent::onOutput($type, $buffer);
     }
+
 
     /**
      * Reference: https://www.skeema.io/docs/commands/lint/
@@ -179,10 +142,10 @@ class SkeemaLintCommand extends SkeemaBaseCommand
     {
         if ($process->getExitCode() >= 2) {
             throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithErrorsException();
-        } else {
-            if (! $this->option('ignore-warnings')) {
-                throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithWarningsException();
-            }
+        }
+
+        if (! $this->option('ignore-warnings')) {
+            throw new \Smakecloud\Skeema\Exceptions\SkeemaLinterExitedWithWarningsException();
         }
     }
 }
