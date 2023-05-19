@@ -54,50 +54,19 @@ class SkeemaPullCommand extends SkeemaBaseCommand
      */
     private function makeArgs(): array
     {
-        $args = [];
-
-        if ($this->option('temp-schema')) {
-            $args['temp-schema'] = $this->option('temp-schema');
-        } else {
-            $args['temp-schema'] = $this->getTempSchemaName();
-        }
-
-        if ($this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads'))) {
-            $args['temp-schema-threads'] = $this->option('temp-schema-threads');
-        }
-
-        if ($this->option('temp-schema-binlog')) {
-            $args['temp-schema-binlog'] = $this->option('temp-schema-binlog');
-        }
-
-        if ($this->option('skip-format')) {
-            $args['skip-format'] = true;
-        }
-
-        if ($this->option('include-auto-inc')) {
-            $args['include-auto-inc'] = true;
-        }
-
-        if ($this->option('new-schemas')) {
-            $args['new-schemas'] = true;
-        }
-
-        if ($this->option('strip-definer')) {
-            $args['strip-definer'] = $this->option('strip-definer');
-        }
-
-        if ($this->option('strip-partitioning')) {
-            $args['strip-partitioning'] = true;
-        }
-
-        if ($this->option('update-views')) {
-            $args['update-views'] = true;
-        }
-
-        if ($this->option('update-partitioning')) {
-            $args['update-partitioning'] = true;
-        }
-
-        return $args;
+        return collect([
+            'temp-schema' => $this->option('temp-schema') ?: $this->getTempSchemaName(),
+            'temp-schema-threads' => ($this->option('temp-schema-threads') && is_numeric($this->option('temp-schema-threads'))) ? $this->option('temp-schema-threads') : null,
+            'temp-schema-binlog' => $this->option('temp-schema-binlog'),
+            'skip-format' => $this->option('skip-format') ? true : null,
+            'include-auto-inc' => $this->option('include-auto-inc') ? true : null,
+            'new-schemas' => $this->option('new-schemas') ? true : null,
+            'strip-definer' => $this->option('strip-definer'),
+            'strip-partitioning' => $this->option('strip-partitioning') ? true : null,
+            'update-views' => $this->option('update-views') ? true : null,
+            'update-partitioning' => $this->option('update-partitioning') ? true : null,
+        ])
+        ->filter()
+        ->toArray();
     }
 }
