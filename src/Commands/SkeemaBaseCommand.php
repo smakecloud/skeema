@@ -190,8 +190,14 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function getProcessEnvironment()
     {
+        $host = $this->getConnection()->getConfig('host');
+
+        if (is_array($host)) {
+            $host = $host[0];
+        }
+
         return [
-            'LARAVEL_SKEEMA_DB_HOST' => $this->getConnection()->getConfig('host'),
+            'LARAVEL_SKEEMA_DB_HOST' => $host,
             'LARAVEL_SKEEMA_DB_PORT' => $this->getConnection()->getConfig('port'),
             'LARAVEL_SKEEMA_DB_USER' => $this->getConnection()->getConfig('username'),
             'LARAVEL_SKEEMA_DB_PASSWORD' => $this->getConnection()->getConfig('password'),
