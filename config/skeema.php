@@ -67,6 +67,9 @@ return [
          * Linting rules for all supported cmds
          */
         'rules' => [
+            /**
+             * Skeema Community Version compatible Rules
+             */
             \Smakecloud\Skeema\Lint\AutoIncRule::class => 'warning',
             \Smakecloud\Skeema\Lint\CharsetRule::class => 'warning',
             \Smakecloud\Skeema\Lint\CompressionRule::class => 'warning',
@@ -82,14 +85,9 @@ return [
             \Smakecloud\Skeema\Lint\NameCaseRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\PkRule::class => 'warning',
             \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'warning',
-
-        /**
-         * These rules are disabled by default
-         * because they are not available in the Community edition of Skeema
-         *
-         * https://www.skeema.io/download/
-         */
-
+            /**
+             * Skeema Plus/Max https://www.skeema.io/download/
+             */
             // \Smakecloud\Skeema\Lint\HasTriggerRule::class => 'error',
             // \Smakecloud\Skeema\Lint\HasViewRule::class => 'error',
         ],
