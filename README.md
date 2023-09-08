@@ -12,7 +12,7 @@ This laravel package provides a set of commands to help you manage your database
 ✅ Avoid downtimes during migrations.<br>
 ✅ Lint your schema files with customizable rulests.<br>
 ✅ Diff your schema files against your database.<br>
-✅ Easy to integrate with your CI/CD pipelin.<br>
+✅ Easy to integrate with your CI/CD pipeline.<br>
 ✅ Utility commands to help you moving from laravel migrations to skeema schema files.<br>
 ✅ Manage your database schema in a more declarative way.<br>
 
@@ -41,28 +41,28 @@ This laravel package provides a set of commands to help you manage your database
 
 **Required**
 
-Download [Skeema](https://www.skeema.io/) ( tested with skeema version 1.9.0-community )
+Download [Skeema](https://www.skeema.io/) ( tested with skeema version 1.10.1-community )
 
 For Linux:
 
 ```bash
-$ curl -LO https://github.com/skeema/skeema/releases/download/v1.9.0/skeema_1.9.0_linux_amd64.tar.gz
-$ tar -xzvf skeema_1.9.0_linux_amd64.tar.gz skeema
+$ curl -LO https://github.com/skeema/skeema/releases/download/v1.10.1/skeema_1.10.1_linux_amd64.tar.gz
+$ tar -xzvf skeema_1.10.1_linux_amd64.tar.gz skeema
 $ sudo mv skeema /usr/local/bin/
 ```
 For Intel-based Macs:
 
 ```bash
-curl -LO https://github.com/skeema/skeema/releases/download/v1.9.0/skeema_1.9.0_mac_amd64.tar.gz
-tar -xzvf skeema_1.9.0_mac_amd64.tar.gz skeema
+curl -LO https://github.com/skeema/skeema/releases/download/v1.10.1/skeema_1.10.1_mac_amd64.tar.gz
+tar -xzvf skeema_1.10.1_mac_amd64.tar.gz skeema
 mv skeema /usr/local/bin/
 ```
 
 For ARM-based Macs (Apple Silicon, e.g. M1):
 
 ```bash
-curl -LO https://github.com/skeema/skeema/releases/download/v1.9.0/skeema_1.9.0_mac_arm64.tar.gz
-tar -xzvf skeema_1.9.0_mac_arm64.tar.gz skeema
+curl -LO https://github.com/skeema/skeema/releases/download/v1.10.1/skeema_1.10.1_mac_arm64.tar.gz
+tar -xzvf skeema_1.10.1_mac_arm64.tar.gz skeema
 mv skeema /usr/local/bin/
 ```
 
@@ -476,7 +476,7 @@ Instead:
 # Make sure skeema:init has been run.
 # database/skeema should exist
 ```
-1) `php artisan skeema:pull` to pull the schema from the database. ( After making sure that the database is up to date )
+`php artisan skeema:pull` to pull the schema from the database. ( After making sure that the database is up to date )
 
 ---
 
@@ -541,7 +541,6 @@ $ composer test:coverage
 
 ## Roadmap
 
-- Skeema 1.10 Test ( better Performance )
 - GitHub Actions Examples
 - Deployment Instructions
 
@@ -561,6 +560,6 @@ The MIT License (MIT). Please see [License File](LICENSE) for more information.
 
 - [Daursu](https://github.com/Daursu) - for the initial idea
 - [Skeema](https://www.skeema.io/) - making all of this possible
-- [GitHub](https://github.com) - gh-ost, skeema
+- [GitHub](https://github.com) - gh-ost
 - [Percona](https://www.percona.com/) - pt-online-schema-change
 - [Smake® IT GmbH](https://github.com/smakecloud)
