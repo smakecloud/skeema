@@ -89,14 +89,25 @@ class SkeemaInitCommandTest extends TestCase
                 $this->getSkeemaDir().'/test1.sql'
             );
         } else {
-            $this->assertFileEquals(
-                __DIR__.'/../stubs/migrations-sql',
-                $this->getSkeemaDir().'/migrations.sql'
-            );
-            $this->assertFileEquals(
-                __DIR__.'/../stubs/test1-sql',
-                $this->getSkeemaDir().'/test1.sql'
-            );
+            if($this->connectionIsMySQL5()) {
+                $this->assertFileEquals(
+                    __DIR__.'/../stubs/migrations-sql',
+                    $this->getSkeemaDir().'/migrations.sql'
+                );
+                $this->assertFileEquals(
+                    __DIR__.'/../stubs/test1-sql',
+                    $this->getSkeemaDir().'/test1.sql'
+                );
+            } elseif($this->connectionIsMySQL8()) {
+                $this->assertFileEquals(
+                    __DIR__.'/../stubs/migrations-mysql8-sql',
+                    $this->getSkeemaDir().'/migrations.sql'
+                );
+                $this->assertFileEquals(
+                    __DIR__.'/../stubs/test1-sql',
+                    $this->getSkeemaDir().'/test1.sql'
+                );
+            }
         }
     }
 }

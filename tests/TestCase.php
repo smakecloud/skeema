@@ -177,4 +177,14 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         return $this->getConnectionDriverName() === 'mysql' && strpos($this->getConnectionVersion(), 'MariaDB') === false;
     }
+
+    protected function connectionIsMySQL5(): bool
+    {
+        return $this->connectionIsMySQL() && strpos($this->getConnectionVersion(), '5.') === 0;
+    }
+
+    protected function connectionIsMySQL8(): bool
+    {
+        return $this->connectionIsMySQL() && strpos($this->getConnectionVersion(), '8.') === 0;
+    }
 }
