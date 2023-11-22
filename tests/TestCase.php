@@ -138,4 +138,22 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
         return $method->invoke($cmd);
     }
+
+    protected function getSkeemaVersionString(): string
+    {
+        exec('skeema version', $output, $returnVar);
+
+        // Check if the command executed successfully
+        if ($returnVar !== 0) {
+            throw new \RuntimeException('Failed to execute skeema version command.');
+        }
+
+        // Extract the version number using regular expression
+        $versionRegex = '/skeema version (\S+),/';
+        if (preg_match($versionRegex, implode("\n", $output), $matches)) {
+            return 'skeema:' . $matches[1];
+        }
+
+        throw new \RuntimeException('Unable to parse skeema version.');
+    }
 }

@@ -1,4 +1,4 @@
-name: phpunit
+name: phpunit-mysql
 
 on:
   push:
@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   phpunit:
-    name: phpunit-php-${{ matrix.php }}-skeema-${{ matrix.skeema }}
+    name: phpunit-mysql-php-${{ matrix.php }}-skeema-${{ matrix.skeema }}
 
     runs-on: ubuntu-latest
 

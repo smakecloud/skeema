@@ -56,9 +56,17 @@ class SkeemaInitCommandTest extends TestCase
             ->assertSuccessful();
 
         $this->assertFileExists($this->getSkeemaDir().'/.skeema');
-        $this->assertFileEquals(
-            __DIR__.'/../stubs/skeema-config',
-            $this->getSkeemaDir().'/.skeema'
+
+        $stub = $this->getStub('skeema-config');
+        $stub = str_replace(
+            '$$SKEEMA_VERSION$$',
+            $this->getSkeemaVersionString(),
+            $stub
+        );
+
+        $this->assertStringEqualsFile(
+            $this->getSkeemaDir().'/.skeema',
+            $stub
         );
     }
 

@@ -1,4 +1,4 @@
-generator=skeema:1.9.0-community
+generator=$$SKEEMA_VERSION$$
 [laravel]
 flavor=mysql:5.7
 host=$LARAVEL_SKEEMA_DB_HOST
