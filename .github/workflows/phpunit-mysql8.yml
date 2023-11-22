@@ -1,0 +1,65 @@
+name: phpunit-mysql8
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phpunit:
+    name: phpunit-mysql8-php-${{ matrix.php }}-skeema-${{ matrix.skeema }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 45
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.1, 8.2]
+        skeema: [1.9.0, 1.10.1, 1.11.0]
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_DATABASE: skeema_test
+        ports:
+           - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=6
+
+    steps:
+      - name: Setup skeema and gh-ost
+        run: |
+          curl -LO https://github.com/skeema/skeema/releases/download/v${{matrix.skeema}}/skeema_${{matrix.skeema}}_linux_amd64.tar.gz
+          tar -xzvf skeema_${{matrix.skeema}}_linux_amd64.tar.gz skeema
+          sudo mv skeema /usr/local/bin/
+          curl -LO https://github.com/github/gh-ost/releases/download/v1.1.5/gh-ost-binary-linux-amd64-20220707162303.tar.gz
+          tar -xzvf gh-ost-binary-linux-amd64-20220707162303.tar.gz gh-ost
+          sudo mv gh-ost /usr/local/bin/
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+          coverage: none
+
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@v2
+
+      - name: Run phpunit
+        run: composer test
