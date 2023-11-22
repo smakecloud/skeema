@@ -57,7 +57,18 @@ class SkeemaInitCommandTest extends TestCase
 
         $this->assertFileExists($this->getSkeemaDir().'/.skeema');
 
-        $stub = $this->getStub('skeema-config');
+        $stub = null;
+
+        if($this->connectionIsMariaDB()) {
+            $stub = $this->getStub('skeema-config-maria');
+        } else {
+            if($this->connectionIsMySQL5()) {
+                $stub = $this->getStub('skeema-config');
+            } elseif($this->connectionIsMySQL8()) {
+                $stub = $this->getStub('skeema-config-mysql8');
+            }
+        }
+
         $stub = str_replace(
             '$$SKEEMA_VERSION$$',
             $this->getSkeemaVersionString(),
