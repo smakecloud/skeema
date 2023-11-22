@@ -4,6 +4,7 @@ namespace Tests;
 
 use Illuminate\Console\Parser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use ReflectionObject;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\StringInput;
@@ -155,5 +156,25 @@ class TestCase extends \Orchestra\Testbench\TestCase
         }
 
         throw new \RuntimeException('Unable to parse skeema version.');
+    }
+
+    protected function getConnectionVersion(): string
+    {
+        return DB::select('SELECT VERSION() as version')[0]->version;
+    }
+
+    protected function getConnectionDriverName(): string
+    {
+        return DB::connection()->getDriverName();
+    }
+
+    protected function connectionIsMariaDB(): bool
+    {
+        return $this->getConnectionDriverName() === 'mysql' && strpos($this->getConnectionVersion(), 'MariaDB') !== false;
+    }
+
+    protected function connectionIsMySQL(): bool
+    {
+        return $this->getConnectionDriverName() === 'mysql' && strpos($this->getConnectionVersion(), 'MariaDB') === false;
     }
 }

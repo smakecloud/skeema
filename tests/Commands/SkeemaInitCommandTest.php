@@ -79,13 +79,24 @@ class SkeemaInitCommandTest extends TestCase
         $this->assertFileExists($this->getSkeemaDir().'/migrations.sql');
         $this->assertFileExists($this->getSkeemaDir().'/test1.sql');
 
-        $this->assertFileEquals(
-            __DIR__.'/../stubs/migrations-sql',
-            $this->getSkeemaDir().'/migrations.sql'
-        );
-        $this->assertFileEquals(
-            __DIR__.'/../stubs/test1-sql',
-            $this->getSkeemaDir().'/test1.sql'
-        );
+        if($this->connectionIsMariaDB()) {
+            $this->assertFileEquals(
+                __DIR__.'/../stubs/migrations-maria-sql',
+                $this->getSkeemaDir().'/migrations.sql'
+            );
+            $this->assertFileEquals(
+                __DIR__.'/../stubs/test1-maria-sql',
+                $this->getSkeemaDir().'/test1.sql'
+            );
+        } else {
+            $this->assertFileEquals(
+                __DIR__.'/../stubs/migrations-sql',
+                $this->getSkeemaDir().'/migrations.sql'
+            );
+            $this->assertFileEquals(
+                __DIR__.'/../stubs/test1-sql',
+                $this->getSkeemaDir().'/test1.sql'
+            );
+        }
     }
 }
