@@ -104,7 +104,7 @@ class SkeemaInitCommandTest extends TestCase
                     $this->getSkeemaDir().'/migrations.sql'
                 );
                 $this->assertFileEquals(
-                    __DIR__.'/../stubs/test1-sql',
+                    __DIR__.'/../stubs/test1-mysql8-sql',
                     $this->getSkeemaDir().'/test1.sql'
                 );
             }
