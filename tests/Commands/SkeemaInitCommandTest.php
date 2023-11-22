@@ -56,9 +56,28 @@ class SkeemaInitCommandTest extends TestCase
             ->assertSuccessful();
 
         $this->assertFileExists($this->getSkeemaDir().'/.skeema');
-        $this->assertFileEquals(
-            __DIR__.'/../stubs/skeema-config',
-            $this->getSkeemaDir().'/.skeema'
+
+        $stub = null;
+
+        if($this->connectionIsMariaDB()) {
+            $stub = $this->getStub('skeema-config-maria');
+        } else {
+            if($this->connectionIsMySQL5()) {
+                $stub = $this->getStub('skeema-config');
+            } elseif($this->connectionIsMySQL8()) {
+                $stub = $this->getStub('skeema-config-mysql8');
+            }
+        }
+
+        $stub = str_replace(
+            '$$SKEEMA_VERSION$$',
+            $this->getSkeemaVersionString(),
+            $stub
+        );
+
+        $this->assertStringEqualsFile(
+            $this->getSkeemaDir().'/.skeema',
+            $stub
         );
     }
 
@@ -71,13 +90,35 @@ class SkeemaInitCommandTest extends TestCase
         $this->assertFileExists($this->getSkeemaDir().'/migrations.sql');
         $this->assertFileExists($this->getSkeemaDir().'/test1.sql');
 
-        $this->assertFileEquals(
-            __DIR__.'/../stubs/migrations-sql',
-            $this->getSkeemaDir().'/migrations.sql'
-        );
-        $this->assertFileEquals(
-            __DIR__.'/../stubs/test1-sql',
-            $this->getSkeemaDir().'/test1.sql'
-        );
+        if($this->connectionIsMariaDB()) {
+            $this->assertFileEquals(
+                __DIR__.'/../stubs/migrations-maria-sql',
+                $this->getSkeemaDir().'/migrations.sql'
+            );
+            $this->assertFileEquals(
+                __DIR__.'/../stubs/test1-maria-sql',
+                $this->getSkeemaDir().'/test1.sql'
+            );
+        } else {
+            if($this->connectionIsMySQL5()) {
+                $this->assertFileEquals(
+                    __DIR__.'/../stubs/migrations-sql',
+                    $this->getSkeemaDir().'/migrations.sql'
+                );
+                $this->assertFileEquals(
+                    __DIR__.'/../stubs/test1-sql',
+                    $this->getSkeemaDir().'/test1.sql'
+                );
+            } elseif($this->connectionIsMySQL8()) {
+                $this->assertFileEquals(
+                    __DIR__.'/../stubs/migrations-mysql8-sql',
+                    $this->getSkeemaDir().'/migrations.sql'
+                );
+                $this->assertFileEquals(
+                    __DIR__.'/../stubs/test1-mysql8-sql',
+                    $this->getSkeemaDir().'/test1.sql'
+                );
+            }
+        }
     }
 }

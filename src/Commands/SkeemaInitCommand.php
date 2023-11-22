@@ -40,16 +40,52 @@ class SkeemaInitCommand extends SkeemaBaseCommand
     /**
      * Patch config file with environment variables interpolated
      */
-    private function getSkeemaConfig(): \Illuminate\Support\Stringable
+    private function getSkeemaConfig($flavor = 'mysql:5.7'): \Illuminate\Support\Stringable
     {
         return Str::of('generator=skeema:'.$this->getSkeemaVersion().PHP_EOL)
             ->append('['.static::SKEEMA_ENV_NAME.']'.PHP_EOL)
-            ->append('flavor=mysql:5.7'.PHP_EOL)
+            ->append('flavor='.$flavor.PHP_EOL)
             ->append('host=$LARAVEL_SKEEMA_DB_HOST'.PHP_EOL)
             ->append('port=$LARAVEL_SKEEMA_DB_PORT'.PHP_EOL)
             ->append('schema=$LARAVEL_SKEEMA_DB_SCHEMA'.PHP_EOL)
             ->append('user=$LARAVEL_SKEEMA_DB_USER'.PHP_EOL)
             ->append('password=$LARAVEL_SKEEMA_DB_PASSWORD'.PHP_EOL);
+    }
+
+    /**
+     * Get the value of a key from a Skeema config file
+     */
+    private function getSkeemaConfigValue($filePath, $key)
+    {
+        // Check if the file exists
+        if (!file_exists($filePath)) {
+            throw new \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException($filePath);
+        }
+
+        // Read the file content
+        $fileContent = file_get_contents($filePath);
+
+        // Split the content into lines
+        $lines = explode("\n", $fileContent);
+
+        // Variable to hold the configuration
+        $config = [];
+
+        // Parse each line
+        foreach ($lines as $line) {
+            // Check if the line is a key-value pair
+            if (strpos($line, '=') !== false) {
+                list($configKey, $configValue) = explode('=', $line, 2);
+                $config[trim($configKey)] = trim($configValue);
+            }
+        }
+
+        // Check if the key exists in the configuration
+        if (!array_key_exists($key, $config)) {
+            return null;
+        }
+
+        return $config[$key];
     }
 
     /**
@@ -65,6 +101,7 @@ class SkeemaInitCommand extends SkeemaBaseCommand
             // @codeCoverageIgnoreEnd
         }
 
-        $this->files->put($configFilePath, $this->getSkeemaConfig()->toString());
+        $flavor = $this->getSkeemaConfigValue($configFilePath, 'flavor');
+        $this->files->put($configFilePath, $this->getSkeemaConfig($flavor)->toString());
     }
 }

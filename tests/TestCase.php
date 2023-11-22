@@ -4,6 +4,7 @@ namespace Tests;
 
 use Illuminate\Console\Parser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use ReflectionObject;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\StringInput;
@@ -137,5 +138,53 @@ class TestCase extends \Orchestra\Testbench\TestCase
         $method->setAccessible(true);
 
         return $method->invoke($cmd);
+    }
+
+    protected function getSkeemaVersionString(): string
+    {
+        exec('skeema version', $output, $returnVar);
+
+        // Check if the command executed successfully
+        if ($returnVar !== 0) {
+            throw new \RuntimeException('Failed to execute skeema version command.');
+        }
+
+        // Extract the version number using regular expression
+        $versionRegex = '/skeema version (\S+),/';
+        if (preg_match($versionRegex, implode("\n", $output), $matches)) {
+            return 'skeema:' . $matches[1];
+        }
+
+        throw new \RuntimeException('Unable to parse skeema version.');
+    }
+
+    protected function getConnectionVersion(): string
+    {
+        return DB::select('SELECT VERSION() as version')[0]->version;
+    }
+
+    protected function getConnectionDriverName(): string
+    {
+        return DB::connection()->getDriverName();
+    }
+
+    protected function connectionIsMariaDB(): bool
+    {
+        return $this->getConnectionDriverName() === 'mysql' && strpos($this->getConnectionVersion(), 'MariaDB') !== false;
+    }
+
+    protected function connectionIsMySQL(): bool
+    {
+        return $this->getConnectionDriverName() === 'mysql' && strpos($this->getConnectionVersion(), 'MariaDB') === false;
+    }
+
+    protected function connectionIsMySQL5(): bool
+    {
+        return $this->connectionIsMySQL() && strpos($this->getConnectionVersion(), '5.') === 0;
+    }
+
+    protected function connectionIsMySQL8(): bool
+    {
+        return $this->connectionIsMySQL() && strpos($this->getConnectionVersion(), '8.') === 0;
     }
 }
