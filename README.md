@@ -39,63 +39,11 @@ This laravel package provides a set of commands to help you manage your database
 
 ## Installation
 
-**Required**
-
-Download [Skeema](https://www.skeema.io/) ( tested with skeema version 1.10.1-community )
-
-For Linux:
+Use the install.sh script to install skeema and gh-ost.
 
 ```bash
-$ curl -LO https://github.com/skeema/skeema/releases/download/v1.10.1/skeema_1.10.1_linux_amd64.tar.gz
-$ tar -xzvf skeema_1.10.1_linux_amd64.tar.gz skeema
-$ sudo mv skeema /usr/local/bin/
+$ curl -s https://raw.githubusercontent.com/smakecloud/skeema/master/install.sh | SKEEMA_VERSION=1.10.1 GH_OST_VERSION=1.1.5 bash
 ```
-For Intel-based Macs:
-
-```bash
-curl -LO https://github.com/skeema/skeema/releases/download/v1.10.1/skeema_1.10.1_mac_amd64.tar.gz
-tar -xzvf skeema_1.10.1_mac_amd64.tar.gz skeema
-mv skeema /usr/local/bin/
-```
-
-For ARM-based Macs (Apple Silicon, e.g. M1):
-
-```bash
-curl -LO https://github.com/skeema/skeema/releases/download/v1.10.1/skeema_1.10.1_mac_arm64.tar.gz
-tar -xzvf skeema_1.10.1_mac_arm64.tar.gz skeema
-mv skeema /usr/local/bin/
-```
-
-<details open="open">
-<summary><strong>Recommended</strong></summary>
-<br>
-Download <a href="https://github.com/github/gh-ost/releases">gh-ost</a> ( tested with gh-ost version 1.1.5 )<br>
-
-For Linux:
-
-```bash
-$ curl -LO https://github.com/github/gh-ost/releases/download/v1.1.5/gh-ost-binary-linux-amd64-20220707162303.tar.gz
-$ tar -xzvf gh-ost-binary-linux-amd64-20220707162303.tar.gz gh-ost
-$ sudo mv gh-ost /usr/local/bin/
-```
-
-For Intel-based Macs:
-
-```bash
-curl -LO https://github.com/github/gh-ost/releases/download/v1.1.5/gh-ost-binary-linux-amd64-20220707162303.tar.gz
-tar -xzvf gh-ost-binary-linux-amd64-20220707162303.tar.gz gh-ost
-sudo mv gh-ost /usr/local/bin/
-```
-
-For ARM-based Macs (Apple Silicon, e.g. M1):
-
-```bash
-curl -LO https://github.com/github/gh-ost/releases/download/v1.1.5/gh-ost-binary-linux-arm64-20220707162303.tar.gz
-tar -xzvf gh-ost-binary-linux-arm64-20220707162303.tar.gz gh-ost
-sudo mv gh-ost /usr/local/bin/
-```
-
-</details>
 
 Install the package:
 ```bash
