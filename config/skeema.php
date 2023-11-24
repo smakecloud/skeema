@@ -84,6 +84,7 @@ return [
             \Smakecloud\Skeema\Lint\HasTimeRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\NameCaseRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\PkRule::class => 'warning',
+            \Smakecloud\Skeema\Lint\ReservedWordRule::class => 'warning',
             \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'warning',
             /**
              * Skeema Plus/Max https://www.skeema.io/download/
