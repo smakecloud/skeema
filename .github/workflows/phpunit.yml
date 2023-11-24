@@ -40,8 +40,8 @@ jobs:
     steps:
       - name: Setup skeema and gh-ost
         run: |
-          curl -LO https://github.com/skeema/skeema/releases/download/v1.9.0/skeema_1.9.0_linux_amd64.tar.gz
-          tar -xzvf skeema_1.9.0_linux_amd64.tar.gz skeema
+          curl -LO https://github.com/skeema/skeema/releases/download/v1.10.1/skeema_1.10.1_linux_amd64.tar.gz
+          tar -xzvf skeema_1.10.1_linux_amd64.tar.gz skeema
           sudo mv skeema /usr/local/bin/
           curl -LO https://github.com/github/gh-ost/releases/download/v1.1.5/gh-ost-binary-linux-amd64-20220707162303.tar.gz
           tar -xzvf gh-ost-binary-linux-amd64-20220707162303.tar.gz gh-ost
