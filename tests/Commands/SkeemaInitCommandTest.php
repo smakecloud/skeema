@@ -85,35 +85,31 @@ class SkeemaInitCommandTest extends TestCase
         $this->assertFileExists($this->getSkeemaDir().'/migrations.sql');
         $this->assertFileExists($this->getSkeemaDir().'/test1.sql');
 
-        if($this->connectionIsMariaDB()) {
+        $expected = match (true) {
+            $this->connectionIsMariaDB() => [
+                'migrations' => __DIR__.'/../stubs/migrations-maria-sql',
+                'test1' => __DIR__.'/../stubs/test1-maria-sql',
+            ],
+            $this->connectionIsMySQL5() => [
+                'migrations' => __DIR__.'/../stubs/migrations-sql',
+                'test1' => __DIR__.'/../stubs/test1-sql',
+            ],
+            $this->connectionIsMySQL8() => [
+                'migrations' => __DIR__.'/../stubs/migrations-mysql8-sql',
+                'test1' => __DIR__.'/../stubs/test1-mysql8-sql',
+            ],
+            default => null,
+        };
+
+        if($expected) {
             $this->assertFileEquals(
-                __DIR__.'/../stubs/migrations-maria-sql',
+                $expected['migrations'],
                 $this->getSkeemaDir().'/migrations.sql'
             );
             $this->assertFileEquals(
-                __DIR__.'/../stubs/test1-maria-sql',
+                $expected['test1'],
                 $this->getSkeemaDir().'/test1.sql'
             );
-        } else {
-            if($this->connectionIsMySQL5()) {
-                $this->assertFileEquals(
-                    __DIR__.'/../stubs/migrations-sql',
-                    $this->getSkeemaDir().'/migrations.sql'
-                );
-                $this->assertFileEquals(
-                    __DIR__.'/../stubs/test1-sql',
-                    $this->getSkeemaDir().'/test1.sql'
-                );
-            } elseif($this->connectionIsMySQL8()) {
-                $this->assertFileEquals(
-                    __DIR__.'/../stubs/migrations-mysql8-sql',
-                    $this->getSkeemaDir().'/migrations.sql'
-                );
-                $this->assertFileEquals(
-                    __DIR__.'/../stubs/test1-mysql8-sql',
-                    $this->getSkeemaDir().'/test1.sql'
-                );
-            }
         }
     }
 }
