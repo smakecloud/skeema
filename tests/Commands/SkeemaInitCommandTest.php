@@ -82,7 +82,7 @@ class SkeemaInitCommandTest extends TestCase
 
         return Str::of($queryResult[0]->Value)
             ->before('-')
-            ->prepend(strtolower($this->getConnection()->getDriverName()) . ':')
+            ->prepend(strtolower($this->getConnection()->getDriverName()).':')
             ->__toString();
     }
 

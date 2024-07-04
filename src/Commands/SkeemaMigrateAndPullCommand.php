@@ -63,7 +63,6 @@ class SkeemaMigrateAndPullCommand extends Command
                     Exception::class,
                     'skeema:push failed with exit code: '.$status
                     .' Files: '.implode(', ', $files->keys()->toArray())
-                    .' Output: '.$this->output ?? ''
                 );
             }
 

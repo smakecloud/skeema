@@ -41,8 +41,6 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Get the cmd to run.
-     *
-     * @return string
      */
     abstract protected function getCommand(Connection $connection): string;
 
@@ -51,17 +49,16 @@ abstract class SkeemaBaseCommand extends Command
      */
     public function handle(): int
     {
-        $this->files = $this->laravel->get(Filesystem::class);
-
-        $this->processFactory = function (...$arguments) {
-            return Process::fromShellCommandline(...$arguments)
-                ->setIdleTimeout(null)
-                ->setTimeout(null);
-        };
-
-        $this->ensureSkeemaDirExists();
-
         try {
+            $this->files = $this->laravel->get(Filesystem::class);
+            $this->ensureSkeemaDirExists();
+
+            $this->processFactory = function (...$arguments) {
+                return Process::fromShellCommandline(...$arguments)
+                    ->setIdleTimeout(null)
+                    ->setTimeout(null);
+            };
+
             $command = $this->getCommand($this->getConnection());
 
             $this->runProcess($command);
@@ -82,8 +79,6 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Get the path to the skeema configuration file.
-     *
-     * @return string
      */
     protected function getSkeemaDir(): string
     {
@@ -101,7 +96,6 @@ abstract class SkeemaBaseCommand extends Command
     {
         $optionKey = preg_replace('/^skeema\./', '', $key, 1, $count);
 
-
         if (filled($optionKey) && $this->hasOption($optionKey)) {
             return $this->option($optionKey) ?? $default;
         }
@@ -111,8 +105,6 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Get the connection instance.
-     *
-     * @return \Illuminate\Database\Connection
      */
     protected function getConnection(): Connection
     {
@@ -123,16 +115,16 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Get the Skeema version.
-     *
-     * @return string
      */
     protected function getSkeemaVersion(): string
     {
         $process = call_user_func(
-            $this->processFactory,
-            'skeema --version',
-            $this->getSkeemaDir(),
-            $this->getProcessEnvironment()
+            function (...$arguments) {
+                return Process::fromShellCommandline(...$arguments)
+                    ->setIdleTimeout(null)
+                    ->setTimeout(null);
+            },
+            'skeema --version'
         );
 
         $process->run();
@@ -145,8 +137,6 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Ensure the skeema directory exists.
-     *
-     * @return void
      */
     protected function ensureSkeemaDirExists(): void
     {
@@ -159,7 +149,6 @@ abstract class SkeemaBaseCommand extends Command
      * Run the process.
      *
      * @param  string  $command
-     * @return void
      */
     protected function runProcess($command): void
     {
@@ -208,7 +197,6 @@ abstract class SkeemaBaseCommand extends Command
      *
      * @param  int  $type
      * @param  string  $buffer
-     * @return void
      */
     protected function onOutput($type, $buffer): void
     {
@@ -251,8 +239,6 @@ abstract class SkeemaBaseCommand extends Command
 
     /**
      * Get the alter wrapper command.
-     *
-     * @return string
      */
     protected function getAlterWrapperCommand(): string
     {
@@ -292,20 +278,18 @@ abstract class SkeemaBaseCommand extends Command
     /**
      * Get the skeema command.
      *
-     * @param  string  $command
      * @param  array<string, mixed>  $arguments
-     * @return string
      */
     protected function getSkeemaCommand(string $command, array $arguments = [], bool $withBaseArgs = true): string
     {
         return Str::of($this->getConfig('skeema.bin', 'skeema'))
-             ->append(' '.$command)
-             ->append(' '.$this->serializeArgs($arguments))
-             ->when(
-                 $withBaseArgs,
-                 fn ($skeemaCommand) => $skeemaCommand->append(' '.$this->serializeArgs($this->getBaseArgs()))
-             )
-             ->toString();
+            ->append(' '.$command)
+            ->append(' '.$this->serializeArgs($arguments))
+            ->when(
+                $withBaseArgs,
+                fn ($skeemaCommand) => $skeemaCommand->append(' '.$this->serializeArgs($this->getBaseArgs()))
+            )
+            ->toString();
     }
 
     /**

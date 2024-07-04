@@ -97,10 +97,10 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
             'allow-engine' => $this->option('allow-engine'),
             'safe-below-size' => $this->option('safe-below-size'),
         ])
-        ->filter()
-        ->merge($this->getLintArgs())
-        ->filter()
-        ->toArray();
+            ->filter()
+            ->merge($this->getLintArgs())
+            ->filter()
+            ->toArray();
 
         if ($this->getConfig('skeema.alter_wrapper.enabled', false)) {
             return collect($args)
@@ -133,10 +133,19 @@ class SkeemaDiffCommand extends SkeemaBaseCommand
             return ['skip-lint' => true];
         }
 
+        $skeemaVersion = $this->getSkeemaVersion();
+
         return collect($baseRules)->merge($diffRules)
-            ->mapWithKeys(function ($value, $key) {
-                return [$this->laravel->make($key)->getOptionString() => $value];
-            })
+            ->mapWithKeys(function (string $value, string $key) use ($skeemaVersion) {
+                $option = $this->laravel->make($key);
+                $optionString = $option->getOptionString();
+                $optionSupportedSince = $option->since();
+                if (version_compare($skeemaVersion, $optionSupportedSince, '<')) {
+                    return [$optionString => null];
+                }
+
+                return [$optionString => $value];
+            })->filter(fn ($value) => $value !== null)
             ->toArray();
     }
 }

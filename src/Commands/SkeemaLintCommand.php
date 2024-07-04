@@ -74,7 +74,7 @@ class SkeemaLintCommand extends SkeemaBaseCommand
             'allow-definer' => $this->option('allow-definer'),
             'allow-engine' => $this->option('allow-engine'),
         ])->filter()
-        ->toArray();
+            ->toArray();
 
         return [
             ...$this->lintRules(),
@@ -91,13 +91,20 @@ class SkeemaLintCommand extends SkeemaBaseCommand
     {
         /** @var array<string, string> */
         $rules = $this->getConfig('skeema.lint.rules', []);
+        $skeemaVersion = $this->getSkeemaVersion();
 
         return collect($rules)
-            ->mapWithKeys(function (string $value, string $key) {
-                $option = $this->laravel->make($key)->getOptionString();
+            ->mapWithKeys(function (string $value, string $key) use ($skeemaVersion) {
+                $option = $this->laravel->make($key);
+                $optionString = $option->getOptionString();
+                $optionSupportedSince = $option->since();
+                if (version_compare($skeemaVersion, $optionSupportedSince, '<')) {
+                    return [$optionString => null];
+                }
 
-                return [$option => $value];
-            })->toArray();
+                return [$optionString => $value];
+            })->filter(fn ($value) => $value !== null)
+            ->toArray();
     }
 
     protected function onOutput($type, $buffer): void

@@ -67,7 +67,7 @@ class SkeemaPullCommand extends SkeemaBaseCommand
             'update-views' => $this->option('update-views') ? true : null,
             'update-partitioning' => $this->option('update-partitioning') ? true : null,
         ])
-        ->filter()
-        ->toArray();
+            ->filter()
+            ->toArray();
     }
 }

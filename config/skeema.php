@@ -84,6 +84,7 @@ return [
             \Smakecloud\Skeema\Lint\HasTimeRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\NameCaseRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\PkRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\PkTypeRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\ReservedWordRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'ignore',
             /**
@@ -91,6 +92,7 @@ return [
              */
             \Smakecloud\Skeema\Lint\HasTriggerRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasViewRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\HasEventRule::class => 'ignore',
         ],
 
         /**
