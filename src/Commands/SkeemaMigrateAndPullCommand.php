@@ -19,7 +19,9 @@ class SkeemaMigrateAndPullCommand extends Command
      */
     protected $signature = 'skeema:migrate-and-pull'
         .' {--keep-migrations : Keep migrations after skeema pull}'
-        .' {--no-push : Skip the initial pushing of skeema files to the database}';
+        .' {--no-push : Skip the initial pushing of skeema files to the database}'
+        .' {--connection= : The database connection to use}'
+        .' {--dir= : The directory where the skeema files are stored}';
 
     /**
      * The console command description.
@@ -61,6 +63,7 @@ class SkeemaMigrateAndPullCommand extends Command
                     Exception::class,
                     'skeema:push failed with exit code: '.$status
                     .' Files: '.implode(', ', $files->keys()->toArray())
+                    .' Output: '.$this->output ?? ''
                 );
             }
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Commands;
 
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class SkeemaInitCommandTest extends TestCase
@@ -63,11 +64,26 @@ class SkeemaInitCommandTest extends TestCase
             $this->getSkeemaVersionString(),
             $stub
         );
+        $stub = str_replace(
+            '$$SKEEMA_FLAVOR$$',
+            $this->getDbFlavor(),
+            $stub
+        );
 
         $this->assertStringEqualsFile(
             $this->getSkeemaDir().'/.skeema',
             $stub
         );
+    }
+
+    private function getDbFlavor(): string
+    {
+        $queryResult = $this->getConnection()->select('SHOW VARIABLES LIKE "version"');
+
+        return Str::of($queryResult[0]->Value)
+            ->before('-')
+            ->prepend(strtolower($this->getConnection()->getDriverName()) . ':')
+            ->__toString();
     }
 
     /** @test */

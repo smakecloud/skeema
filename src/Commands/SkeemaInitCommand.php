@@ -21,7 +21,7 @@ class SkeemaInitCommand extends SkeemaBaseCommand
     {
         $this->confirmToProceed('Running skeema init will overwrite any existing schema files.');
 
-        return $this->getSkeemaCommand('init '.static::SKEEMA_ENV_NAME, [
+        return $this->getSkeemaCommand('init ' . static::SKEEMA_ENV_NAME, [
             'host' => $connection->getConfig('host'),
             'schema' => $connection->getConfig('database'),
             'user' => $connection->getConfig('username'),
@@ -37,19 +37,29 @@ class SkeemaInitCommand extends SkeemaBaseCommand
         $this->patchSkeemaConfigFile();
     }
 
+    protected function getDbFlavor(): string
+    {
+        $queryResult = $this->getConnection()->select('SHOW VARIABLES LIKE "version"');
+
+        return Str::of($queryResult[0]->Value)
+            ->before('-')
+            ->prepend(strtolower($this->getConnection()->getDriverName()) . ':')
+            ->__toString();
+    }
+
     /**
      * Patch config file with environment variables interpolated
      */
     private function getSkeemaConfig(): \Illuminate\Support\Stringable
     {
-        return Str::of('generator=skeema:'.$this->getSkeemaVersion().PHP_EOL)
-            ->append('['.static::SKEEMA_ENV_NAME.']'.PHP_EOL)
-            ->append('flavor=mysql:5.7'.PHP_EOL)
-            ->append('host=$LARAVEL_SKEEMA_DB_HOST'.PHP_EOL)
-            ->append('port=$LARAVEL_SKEEMA_DB_PORT'.PHP_EOL)
-            ->append('schema=$LARAVEL_SKEEMA_DB_SCHEMA'.PHP_EOL)
-            ->append('user=$LARAVEL_SKEEMA_DB_USER'.PHP_EOL)
-            ->append('password=$LARAVEL_SKEEMA_DB_PASSWORD'.PHP_EOL);
+        return Str::of('generator=skeema:' . $this->getSkeemaVersion() . PHP_EOL)
+            ->append('[' . static::SKEEMA_ENV_NAME . ']' . PHP_EOL)
+            ->append('flavor=' . $this->getDbFlavor() . PHP_EOL)
+            ->append('host=$LARAVEL_SKEEMA_DB_HOST' . PHP_EOL)
+            ->append('port=$LARAVEL_SKEEMA_DB_PORT' . PHP_EOL)
+            ->append('schema=$LARAVEL_SKEEMA_DB_SCHEMA' . PHP_EOL)
+            ->append('user=$LARAVEL_SKEEMA_DB_USER' . PHP_EOL)
+            ->append('password=$LARAVEL_SKEEMA_DB_PASSWORD' . PHP_EOL);
     }
 
     /**
@@ -57,9 +67,9 @@ class SkeemaInitCommand extends SkeemaBaseCommand
      */
     private function patchSkeemaConfigFile(): void
     {
-        $configFilePath = $this->getSkeemaDir().DIRECTORY_SEPARATOR.'.skeema';
+        $configFilePath = $this->getSkeemaDir() . DIRECTORY_SEPARATOR . '.skeema';
 
-        if (! $this->files->exists($configFilePath)) {
+        if (!$this->files->exists($configFilePath)) {
             // @codeCoverageIgnoreStart
             throw new \Smakecloud\Skeema\Exceptions\SkeemaConfigNotFoundException($configFilePath);
             // @codeCoverageIgnoreEnd

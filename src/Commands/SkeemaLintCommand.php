@@ -27,7 +27,8 @@ class SkeemaLintCommand extends SkeemaBaseCommand
         .' {--temp-schema= : This option specifies the name of the temporary schema to use for Skeema workspace operations.}'
         .' {--temp-schema-threads= : This option controls the concurrency level for CREATE queries when populating the workspace, as well as DROP queries when cleaning up the workspace.}'
         .' {--temp-schema-binlog= : This option controls whether or not workspace operations are written to the database’s binary log, which means they will be executed on replicas if replication is configured.}'
-        .' {--connection=}';
+        .' {--connection= : The database connection to use}'
+        .' {--dir= : The directory where the skeema files are stored}';
 
     protected $description = 'Lint the database schema ';
 

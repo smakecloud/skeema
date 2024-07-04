@@ -99,13 +99,11 @@ abstract class SkeemaBaseCommand extends Command
      */
     protected function getConfig(string $key, mixed $default = null)
     {
-        $optionKey = Str::of($key)
-            ->prepend('skeema.')
-            ->replaceFirst('skeema.', '')
-            ->toString();
+        $optionKey = preg_replace('/^skeema\./', '', $key, 1, $count);
+
 
         if (filled($optionKey) && $this->hasOption($optionKey)) {
-            return $this->option($optionKey);
+            return $this->option($optionKey) ?? $default;
         }
 
         return $this->laravel->get('config')->get($key, $default);

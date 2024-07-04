@@ -22,7 +22,9 @@ class SkeemaDeploymentCheckCommand extends Command
     protected $signature = 'skeema:deployment-check'
         .' {--ignore-migrations : Ignore existing migrations}'
         .' {--ignore-dump-file : Ignore existing dump-file}'
-        .' {--ignore-ghost-migrations : Ignore running ghost migrations}';
+        .' {--ignore-ghost-migrations : Ignore running ghost migrations}'
+        .' {--connection= : The database connection to use}'
+        .' {--dir= : The directory where the skeema files are stored}';
 
     /**
      * The console command description.

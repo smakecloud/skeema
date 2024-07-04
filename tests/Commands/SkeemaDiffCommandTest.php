@@ -22,6 +22,8 @@ class SkeemaDiffCommandTest extends TestCase
     {
         $this->artisan('skeema:init')->assertSuccessful();
 
+        sleep(1);
+
         $this->artisan('skeema:diff')
             ->assertExitCode(0);
     }
