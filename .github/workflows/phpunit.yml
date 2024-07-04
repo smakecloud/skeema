@@ -25,7 +25,7 @@ jobs:
 
     services:
       mysql:
-        image: ghcr.io/smakecloud/mysql-image:9ffb00dc732721f5f9cecc581b87568aea6717aa
+        image: mysql:8.0
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_DATABASE: skeema_test
