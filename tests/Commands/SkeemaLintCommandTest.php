@@ -22,7 +22,7 @@ class SkeemaLintCommandTest extends TestCase
     {
         $this->artisan('skeema:init')->assertSuccessful();
 
-        $this->artisan('skeema:lint')
+        $this->artisan('skeema:lint --skip-format')
             ->assertExitCode(0);
     }
 

@@ -18,31 +18,33 @@ This laravel package provides a set of commands to help you manage your database
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-  - [Dumping the Schema](#dumping-the-schema)
-  - [Diffing the Schema](#diffing-the-schema)
-  - [Linting the Schema](#linting-the-schema)
-  - [Pushing the Schema](#pushing-the-schema)
-  - [Pulling the Schema](#pulling-the-schema)
-  - [Deployment Checking](#deployment-checking)
-  - [Laravel Migrations to Skeema "converting"](#laravel-migrations-to-skeema-converting)
-- [Quirks](#quirks)
-  - [parallel-testing](#parallel-testing)
-  - [larastan](#larastan)
-- [Testing](#testing)
-- [Roadmap](#roadmap)
-- [Disclaimer](#disclaimer)
-- [Credits](#credits)
-- [License](#license)
+- [Laravel Skeema](#laravel-skeema)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Usage](#usage)
+    - [Dumping the schema](#dumping-the-schema)
+    - [Linting the schema](#linting-the-schema)
+    - [Diffing the schema](#diffing-the-schema)
+    - [Pushing the schema](#pushing-the-schema)
+    - [Pulling the schema](#pulling-the-schema)
+    - [Deployment Checking](#deployment-checking)
+    - [Laravel Migrations to Skeema "converting"](#laravel-migrations-to-skeema-converting)
+  - [Quirks](#quirks)
+    - [Parallel Testing](#parallel-testing)
+    - [Larastan](#larastan)
+  - [Testing](#testing)
+  - [Roadmap](#roadmap)
+  - [Disclaimer](#disclaimer)
+  - [License](#license)
+  - [Credits](#credits)
 
 ## Installation
 
 Use the install.sh script to install skeema and gh-ost.
 
 ```bash
-$ curl -s https://raw.githubusercontent.com/smakecloud/skeema/master/install.sh | SKEEMA_VERSION=1.10.1 GH_OST_VERSION=1.1.5 bash
+$ curl -s https://raw.githubusercontent.com/smakecloud/skeema/master/install.sh | SKEEMA_VERSION=1.11.0 GH_OST_VERSION=1.1.5 bash
 ```
 
 Install the package:
@@ -78,7 +80,7 @@ return [
     /*
      * The directory where the schema files will be stored.
      */
-    'dir' => 'database/skeema',
+    'dir' => env('SKEEMA_DIR_PATH', 'database/skeema'),
 
     /*
      * The connection to use when dumping the schema.
@@ -139,31 +141,32 @@ return [
          * Linting rules for all supported cmds
          */
         'rules' => [
-            \Smakecloud\Skeema\Lint\AutoIncRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\CharsetRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\CompressionRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\DefinerRule::class => 'error',
-            \Smakecloud\Skeema\Lint\DisplayWidthRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\DupeIndexRule::class => 'error',
-            \Smakecloud\Skeema\Lint\EngineRule::class => 'warning',
+            /**
+             * Skeema Community Version compatible Rules
+             */
+            \Smakecloud\Skeema\Lint\AutoIncRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\CharsetRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\CompressionRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\DefinerRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\DisplayWidthRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\DupeIndexRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\EngineRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasEnumRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasFkRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasFloatRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasRoutineRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasTimeRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\NameCaseRule::class => 'ignore',
-            \Smakecloud\Skeema\Lint\PkRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'warning',
-
-        /**
-         * These rules are disabled by default
-         * because they are not available in the Community edition of Skeema
-         *
-         * https://www.skeema.io/download/
-         */
-
-            // \Smakecloud\Skeema\Lint\HasTriggerRule::class => 'error',
-            // \Smakecloud\Skeema\Lint\HasViewRule::class => 'error',
+            \Smakecloud\Skeema\Lint\PkRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\PkTypeRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\ReservedWordRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'ignore',
+            /**
+             * Skeema Plus/Max https://www.skeema.io/download/
+             */
+            \Smakecloud\Skeema\Lint\HasTriggerRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\HasViewRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\HasEventRule::class => 'ignore',
         ],
 
         /**
@@ -198,12 +201,26 @@ Run `php artisan skeema -h` to see all available commands and options.
 <details open="open">
 <summary><strong>Commands</strong></summary>
 
-- [Dumping the schema](#dumping-the-schema)
-- [Linting the schema](#linting-the-schema)
-- [Diffing the schema](#diffing-the-schema)
-- [Pushing the schema](#pushing-the-schema)
-- [Pulling the schema](#pulling-the-schema)
-- [Migrating the schema](#migrating-the-schema)
+- [Laravel Skeema](#laravel-skeema)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Usage](#usage)
+    - [Dumping the schema](#dumping-the-schema)
+    - [Linting the schema](#linting-the-schema)
+    - [Diffing the schema](#diffing-the-schema)
+    - [Pushing the schema](#pushing-the-schema)
+    - [Pulling the schema](#pulling-the-schema)
+    - [Deployment Checking](#deployment-checking)
+    - [Laravel Migrations to Skeema "converting"](#laravel-migrations-to-skeema-converting)
+  - [Quirks](#quirks)
+    - [Parallel Testing](#parallel-testing)
+    - [Larastan](#larastan)
+  - [Testing](#testing)
+  - [Roadmap](#roadmap)
+  - [Disclaimer](#disclaimer)
+  - [License](#license)
+  - [Credits](#credits)
 
 </details>
 
@@ -256,6 +273,7 @@ Options:
       --ansi|--no-ansi                         Force (or disable --no-ansi) ANSI output
   -n, --no-interaction                         Do not ask any interactive question
       --env[=ENV]                              The environment the command should run under
+      --dir[=DIR]                              The directory where the schema files are stored
   -v|vv|vvv, --verbose                         Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 
@@ -304,6 +322,7 @@ Options:
       --ansi|--no-ansi                         Force (or disable --no-ansi) ANSI output
   -n, --no-interaction                         Do not ask any interactive question
       --env[=ENV]                              The environment the command should run under
+      --dir[=DIR]                              The directory where the schema files are stored
   -v|vv|vvv, --verbose                         Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 
@@ -354,6 +373,7 @@ Options:
       --ansi|--no-ansi                         Force (or disable --no-ansi) ANSI output
   -n, --no-interaction                         Do not ask any interactive question
       --env[=ENV]                              The environment the command should run under
+      --dir[=DIR]                              The directory where the schema files are stored
   -v|vv|vvv, --verbose                         Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 </details>
@@ -392,6 +412,7 @@ Options:
       --ansi|--no-ansi                 Force (or disable --no-ansi) ANSI output
   -n, --no-interaction                 Do not ask any interactive question
       --env[=ENV]                      The environment the command should run under
+      --dir[=DIR]                      The directory where the schema files are stored
   -v|vv|vvv, --verbose                 Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 

@@ -9,7 +9,7 @@ return [
     /*
      * The directory where the schema files will be stored.
      */
-    'dir' => 'database/skeema',
+    'dir' => env('SKEEMA_DIR_PATH', 'database/skeema'),
 
     /*
      * The connection to use when dumping the schema.
@@ -70,27 +70,29 @@ return [
             /**
              * Skeema Community Version compatible Rules
              */
-            \Smakecloud\Skeema\Lint\AutoIncRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\CharsetRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\CompressionRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\DefinerRule::class => 'error',
-            \Smakecloud\Skeema\Lint\DisplayWidthRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\DupeIndexRule::class => 'error',
-            \Smakecloud\Skeema\Lint\EngineRule::class => 'warning',
+            \Smakecloud\Skeema\Lint\AutoIncRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\CharsetRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\CompressionRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\DefinerRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\DisplayWidthRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\DupeIndexRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\EngineRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasEnumRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasFkRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasFloatRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasRoutineRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\HasTimeRule::class => 'ignore',
             \Smakecloud\Skeema\Lint\NameCaseRule::class => 'ignore',
-            \Smakecloud\Skeema\Lint\PkRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\ReservedWordRule::class => 'warning',
-            \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'warning',
+            \Smakecloud\Skeema\Lint\PkRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\PkTypeRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\ReservedWordRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\ZeroDateRule::class => 'ignore',
             /**
              * Skeema Plus/Max https://www.skeema.io/download/
              */
-            // \Smakecloud\Skeema\Lint\HasTriggerRule::class => 'error',
-            // \Smakecloud\Skeema\Lint\HasViewRule::class => 'error',
+            \Smakecloud\Skeema\Lint\HasTriggerRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\HasViewRule::class => 'ignore',
+            \Smakecloud\Skeema\Lint\HasEventRule::class => 'ignore',
         ],
 
         /**

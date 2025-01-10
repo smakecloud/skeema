@@ -78,7 +78,6 @@ class TestCase extends \Orchestra\Testbench\TestCase
         return file_get_contents(__DIR__.'/stubs/'.$name);
     }
 
-
     /**
      * Get Application base path.
      *
@@ -152,7 +151,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
         // Extract the version number using regular expression
         $versionRegex = '/skeema version (\S+),/';
         if (preg_match($versionRegex, implode("\n", $output), $matches)) {
-            return 'skeema:' . $matches[1];
+            return 'skeema:'.$matches[1];
         }
 
         throw new \RuntimeException('Unable to parse skeema version.');
