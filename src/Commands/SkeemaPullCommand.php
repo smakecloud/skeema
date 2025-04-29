@@ -22,7 +22,8 @@ class SkeemaPullCommand extends SkeemaBaseCommand
         .' {--temp-schema= : This option specifies the name of the temporary schema to use for Skeema workspace operations.}'
         .' {--temp-schema-threads= : This option controls the concurrency level for CREATE queries when populating the workspace, as well as DROP queries when cleaning up the workspace.}'
         .' {--temp-schema-binlog= : This option controls whether or not workspace operations are written to the database’s binary log, which means they will be executed on replicas if replication is configured.}'
-        .' {--connection=}';
+        .' {--connection=}'
+        .' {--dir= : The directory where the skeema files are stored.}';
 
     protected $description = 'Pull the database schema ';
 
@@ -66,7 +67,7 @@ class SkeemaPullCommand extends SkeemaBaseCommand
             'update-views' => $this->option('update-views') ? true : null,
             'update-partitioning' => $this->option('update-partitioning') ? true : null,
         ])
-        ->filter()
-        ->toArray();
+            ->filter()
+            ->toArray();
     }
 }

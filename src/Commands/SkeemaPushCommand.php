@@ -35,7 +35,8 @@ class SkeemaPushCommand extends SkeemaBaseCommand
         .' {--temp-schema-threads= : This option controls the concurrency level for CREATE queries when populating the workspace, as well as DROP queries when cleaning up the workspace.}'
         .' {--temp-schema-binlog= : This option controls whether or not workspace operations are written to the database’s binary log, which means they will be executed on replicas if replication is configured.}'
         .' {--force}'
-        .' {--connection=}';
+        .' {--connection= : The database connection to use.}'
+        .' {--dir= : The directory where the skeema files are stored.}';
 
     protected $description = 'Push the database schema ';
 
@@ -90,10 +91,10 @@ class SkeemaPushCommand extends SkeemaBaseCommand
             'allow-engine' => $this->option('allow-engine'),
             'safe-below-size' => $this->option('safe-below-size'),
         ])
-        ->filter()
-        ->merge($this->getLintArgs())
-        ->filter()
-        ->toArray();
+            ->filter()
+            ->merge($this->getLintArgs())
+            ->filter()
+            ->toArray();
 
         if ($this->getConfig('skeema.alter_wrapper.enabled', false)) {
             return collect($args)
@@ -126,10 +127,19 @@ class SkeemaPushCommand extends SkeemaBaseCommand
             return ['skip-lint' => true];
         }
 
+        $skeemaVersion = $this->getSkeemaVersion();
+
         return collect($baseRules)->merge($diffRules)
-            ->mapWithKeys(function ($value, $key) {
-                return [$this->laravel->make($key)->getOptionString() => $value];
-            })
+            ->mapWithKeys(function (string $value, string $key) use ($skeemaVersion) {
+                $option = $this->laravel->make($key);
+                $optionString = $option->getOptionString();
+                $optionSupportedSince = $option->since();
+                if (version_compare($skeemaVersion, $optionSupportedSince, '<')) {
+                    return [$optionString => null];
+                }
+
+                return [$optionString => $value];
+            })->filter(fn ($value) => $value !== null)
             ->toArray();
     }
 

@@ -37,6 +37,16 @@ class SkeemaInitCommand extends SkeemaBaseCommand
         $this->patchSkeemaConfigFile();
     }
 
+    protected function getDbFlavor(): string
+    {
+        $queryResult = $this->getConnection()->select('SHOW VARIABLES LIKE "version"');
+
+        return Str::of($queryResult[0]->Value)
+            ->before('-')
+            ->prepend(strtolower($this->getConnection()->getDriverName()).':')
+            ->__toString();
+    }
+
     /**
      * Patch config file with environment variables interpolated
      */
@@ -44,7 +54,7 @@ class SkeemaInitCommand extends SkeemaBaseCommand
     {
         return Str::of('generator=skeema:'.$this->getSkeemaVersion().PHP_EOL)
             ->append('['.static::SKEEMA_ENV_NAME.']'.PHP_EOL)
-            ->append('flavor=mysql:5.7'.PHP_EOL)
+            ->append('flavor='.$this->getDbFlavor().PHP_EOL)
             ->append('host=$LARAVEL_SKEEMA_DB_HOST'.PHP_EOL)
             ->append('port=$LARAVEL_SKEEMA_DB_PORT'.PHP_EOL)
             ->append('schema=$LARAVEL_SKEEMA_DB_SCHEMA'.PHP_EOL)

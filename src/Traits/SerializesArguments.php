@@ -8,7 +8,6 @@ trait SerializesArguments
      * Serialize the given arguments.
      *
      * @param  array<string, mixed>  $args
-     * @return string
      */
     public function serializeArgs(array $args): string
     {
@@ -25,7 +24,6 @@ trait SerializesArguments
      *
      * @param  mixed  $value
      * @param  string  $key
-     * @return string
      */
     public function serializeArgument($value, $key): string
     {
