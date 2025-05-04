@@ -41,18 +41,18 @@ This laravel package provides a set of commands to help you manage your database
 
 Use the install.sh script to install skeema and gh-ost.
 
-```bash
+```console
 $ curl -s https://raw.githubusercontent.com/smakecloud/skeema/master/install.sh | SKEEMA_VERSION=1.10.1 GH_OST_VERSION=1.1.5 bash
 ```
 
 Install the package:
-```bash
+```console
 $ composer require smakecloud/skeema
 ```
 
 Publish the config file:
-```bash
-$ php artisan vendor:publish --provider="SmakCloud\Skeema\SkeemaServiceProvider"
+```console
+$ php artisan vendor:publish --provider="Smakecloud\Skeema\ServiceProvider"
 ```
 
 
