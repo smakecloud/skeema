@@ -61,6 +61,10 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     private function removeExistingSkeemaDir(): void
     {
+        if (empty(config('skeema.dir'))) {
+            throw new \RuntimeException('config("skeema.dir") is empty, refusing to delete the application base path.');
+        }
+
         $skeemaDir = $this->getSkeemaDir();
 
         if ($this->app->files->exists($skeemaDir)) {

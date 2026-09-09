@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [8.1, 8.2]
+        php: [8.2, 8.3, 8.4]
 
     services:
       mysql:
@@ -48,10 +48,10 @@ jobs:
           sudo mv gh-ost /usr/local/bin/
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup php
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@2.37.2
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql, bcmath, soap, intl, gd, exif, iconv, imagick
