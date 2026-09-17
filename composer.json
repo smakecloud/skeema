@@ -14,9 +14,9 @@
     },
     "require-dev": {
         "laravel/pint": "^1.13",
-        "orchestra/testbench": "^7.22|^8.15",
+        "orchestra/testbench": "^7.22|^8.15|^9.0|^10.0",
         "phpstan/phpstan": "^1.10",
-        "phpunit/phpunit": "^7.2|^8.4|^9.5|^10.1"
+        "phpunit/phpunit": "^7.2|^8.4|^9.5|^10.1|^11.5"
     },
     "autoload": {
         "psr-4": {
